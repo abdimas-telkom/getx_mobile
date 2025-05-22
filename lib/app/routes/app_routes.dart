@@ -7,6 +7,7 @@ abstract class Routes {
   static const STUDENT_DASHBOARD = _Paths.STUDENT_DASHBOARD;
   static const STUDENT_QUIZ = _Paths.STUDENT_QUIZ;
   static const STUDENT_RESULT = _Paths.STUDENT_RESULT;
+  static const AUTH = _Paths.AUTH;
 }
 
 abstract class _Paths {
@@ -15,4 +16,5 @@ abstract class _Paths {
   static const STUDENT_DASHBOARD = '/student-dashboard';
   static const STUDENT_QUIZ = '/student-quiz';
   static const STUDENT_RESULT = '/student-result';
+  static const AUTH = '/auth';
 }

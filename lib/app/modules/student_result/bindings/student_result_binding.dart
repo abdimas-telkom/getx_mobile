@@ -5,8 +5,7 @@ import '../controllers/student_result_controller.dart';
 class StudentResultBinding extends Bindings {
   @override
   void dependencies() {
-    Get.lazyPut<StudentResultController>(
-      () => StudentResultController(),
-    );
+    final attemptId = Get.arguments as int;
+    Get.lazyPut(() => StudentResultController(attemptId: attemptId));
   }
 }

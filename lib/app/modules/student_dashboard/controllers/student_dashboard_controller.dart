@@ -1,9 +1,14 @@
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:ujian_sd_babakan_ciparay/app/routes/app_pages.dart';
+import 'package:ujian_sd_babakan_ciparay/services/auth_service.dart';
+import 'package:ujian_sd_babakan_ciparay/services/student_quiz_service.dart';
 
 class StudentDashboardController extends GetxController {
-  //TODO: Implement StudentDashboardController
+  final codeController = TextEditingController();
+  final isLoading = false.obs;
+  final errorMessage = ''.obs;
 
-  final count = 0.obs;
   @override
   void onInit() {
     super.onInit();
@@ -16,8 +21,35 @@ class StudentDashboardController extends GetxController {
 
   @override
   void onClose() {
+    codeController.dispose();
     super.onClose();
   }
 
-  void increment() => count.value++;
+  Future<void> joinQuiz() async {
+    if (codeController.text.isEmpty) {
+      errorMessage.value = 'Please enter a quiz code';
+      return;
+    }
+    isLoading.value = true;
+    errorMessage.value = '';
+    try {
+      final quiz = await StudentQuizService.getQuizByCode(codeController.text);
+      isLoading.value = false;
+      Get.toNamed(Routes.STUDENT_QUIZ, arguments: quiz['quiz_id']);
+    } catch (e) {
+      isLoading.value = false;
+      errorMessage.value = e.toString().contains('not found')
+          ? 'Quiz not found or inactive'
+          : e.toString();
+    }
+  }
+
+  Future<void> logout() async {
+    try {
+      await AuthService.logout();
+      Get.offAllNamed(Routes.AUTH);
+    } catch (e) {
+      errorMessage.value = e.toString();
+    }
+  }
 }

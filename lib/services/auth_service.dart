@@ -1,9 +1,11 @@
-import 'package:dio/dio.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'api_client.dart';
 
 class AuthService {
-  static const _tokenKey = 'auth_token';
+  static const String _tokenKey = 'auth_token';
+  static const String _roleKey = 'user_role';
+
+  static const String roleKey = _roleKey;
 
   static Future<void> saveToken(String token) async {
     final prefs = await SharedPreferences.getInstance();
@@ -18,7 +20,7 @@ class AuthService {
     return token;
   }
 
-  static Future<void> register(
+  static Future<Map<String, dynamic>> register(
     String name,
     String email,
     String password,
@@ -28,23 +30,31 @@ class AuthService {
       '/register',
       data: {'name': name, 'email': email, 'password': password, 'role': role},
     );
-    final token = resp.data['token'] as String;
+    final data = Map<String, dynamic>.from(resp.data);
+    final token = data['token'] as String;
     await saveToken(token);
+    return data;
   }
 
-  static Future<void> login(String email, String password) async {
+  static Future<Map<String, dynamic>> login(
+    String email,
+    String password,
+  ) async {
     final resp = await ApiClient.instance.post(
       '/login',
       data: {'email': email, 'password': password},
     );
-    final token = resp.data['token'] as String;
+    final data = Map<String, dynamic>.from(resp.data);
+    final token = data['token'] as String;
     await saveToken(token);
+    return data;
   }
 
   static Future<void> logout() async {
     await ApiClient.instance.post('/logout');
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove(_tokenKey);
+    await prefs.remove(_roleKey);
     ApiClient.addAuthHeader('');
   }
 }
