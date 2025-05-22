@@ -24,6 +24,13 @@ class TeacherQuizService {
     return resp.data;
   }
 
+  static Future<List<dynamic>> getQuizAttempts(int quizId) async {
+    final resp = await ApiClient.instance.get(
+      '/teacher/quizzes/$quizId/attempts',
+    );
+    return resp.data['data'] ?? resp.data;
+  }
+
   static Future<Map<String, dynamic>> getQuizDetails(int id) async {
     final resp = await ApiClient.instance.get('/teacher/quizzes/$id');
     return resp.data;
