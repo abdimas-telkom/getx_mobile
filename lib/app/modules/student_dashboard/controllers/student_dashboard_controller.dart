@@ -35,7 +35,7 @@ class StudentDashboardController extends GetxController {
     try {
       final quiz = await StudentQuizService.getQuizByCode(codeController.text);
       isLoading.value = false;
-      Get.toNamed(Routes.STUDENT_QUIZ, arguments: quiz['quiz_id']);
+      Get.offNamed(Routes.STUDENT_QUIZ, arguments: quiz['quiz_id']);
     } catch (e) {
       isLoading.value = false;
       errorMessage.value = e.toString().contains('not found')

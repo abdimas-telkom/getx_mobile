@@ -37,6 +37,7 @@ class StudentDashboardView extends GetView<StudentDashboardController> {
                 border: OutlineInputBorder(),
                 hintText: 'Enter code',
               ),
+              maxLength: 8,
               textAlign: TextAlign.center,
               style: const TextStyle(fontSize: 24, letterSpacing: 8),
             ),
