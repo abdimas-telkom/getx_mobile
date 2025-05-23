@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:ujian_sd_babakan_ciparay/app/modules/teacher_dashboard/controllers/teacher_dashboard_controller.dart';
 import 'package:ujian_sd_babakan_ciparay/app/routes/app_pages.dart';
 import 'package:ujian_sd_babakan_ciparay/models/quiz_attempt.dart';
 import 'package:ujian_sd_babakan_ciparay/services/teacher_quiz_service.dart';
@@ -30,12 +31,19 @@ class TeacherQuizDetailsController extends GetxController
     loadAttempts();
   }
 
+  void onClose() {
+    tabController.dispose();
+    final parent = Get.find<TeacherDashboardController>();
+    parent.loadQuizzes();
+    super.onClose();
+  }
+
   Future<void> loadQuizDetails() async {
     isLoadingInfo.value = true;
     try {
       final data = await TeacherQuizService.getQuizDetails(quizId);
-      quizData.value = data;
-      questions.assignAll(data['questions'] ?? []);
+      quizData.value = data as Map<String, dynamic>?;
+      questions.value = data['questions'] ?? [];
     } catch (e) {
       Get.snackbar('Error', e.toString(), snackPosition: SnackPosition.BOTTOM);
     } finally {
@@ -47,11 +55,31 @@ class TeacherQuizDetailsController extends GetxController
     isLoadingAttempts.value = true;
     try {
       final list = await TeacherQuizService.getQuizAttempts(quizId);
-      attempts.assignAll(list as Iterable<QuizAttempt>);
+      attempts.value = list;
     } catch (e) {
       Get.snackbar('Error', e.toString(), snackPosition: SnackPosition.BOTTOM);
     } finally {
       isLoadingAttempts.value = false;
+    }
+  }
+
+  Future<void> updateQuizDetails(Map<String, dynamic> updatedData) async {
+    try {
+      await TeacherQuizService.updateQuiz(quizId, updatedData);
+
+      Get.snackbar(
+        'Success',
+        'Quiz updated successfully',
+        snackPosition: SnackPosition.BOTTOM,
+      );
+
+      await loadQuizDetails();
+    } catch (e) {
+      Get.snackbar(
+        'Error',
+        'Error updating quiz: ${e.toString()}',
+        snackPosition: SnackPosition.BOTTOM,
+      );
     }
   }
 

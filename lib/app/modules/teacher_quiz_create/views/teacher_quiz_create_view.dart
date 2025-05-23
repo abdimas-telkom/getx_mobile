@@ -6,17 +6,20 @@ import '../controllers/teacher_quiz_create_controller.dart';
 
 class TeacherQuizCreateView extends GetView<TeacherQuizCreateController> {
   const TeacherQuizCreateView({super.key});
+
   @override
   Widget build(BuildContext context) {
     final c = controller;
     return Scaffold(
       appBar: AppBar(title: const Text('Create New Quiz')),
       body: Obx(() {
-        if (c.isLoading.value)
+        if (c.isLoading.value) {
           return const Center(child: CircularProgressIndicator());
-        return Padding(
+        }
+        return SingleChildScrollView(
           padding: const EdgeInsets.all(16),
-          child: ListView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               TextField(
                 onChanged: (v) => c.title.value = v,
@@ -29,7 +32,7 @@ class TeacherQuizCreateView extends GetView<TeacherQuizCreateController> {
               TextField(
                 onChanged: (v) => c.description.value = v,
                 decoration: const InputDecoration(
-                  labelText: 'Description',
+                  labelText: 'Description (optional)',
                   border: OutlineInputBorder(),
                 ),
                 maxLines: 3,
@@ -37,17 +40,24 @@ class TeacherQuizCreateView extends GetView<TeacherQuizCreateController> {
               const SizedBox(height: 16),
               SwitchListTile(
                 title: const Text('Custom Code'),
+                subtitle: const Text(
+                  'Create a memorable code for your students',
+                ),
                 value: c.useCustom.value,
                 onChanged: (v) => c.useCustom.value = v,
               ),
-              if (c.useCustom.value)
+              if (c.useCustom.value) ...[
+                const SizedBox(height: 8),
                 TextField(
                   onChanged: (v) => c.code.value = v,
                   decoration: const InputDecoration(
                     labelText: 'Code',
+                    hintText: 'e.g., MATH101',
                     border: OutlineInputBorder(),
                   ),
+                  maxLength: 8,
                 ),
+              ],
               const SizedBox(height: 16),
               TextField(
                 onChanged: (v) => c.timeLimit.value = int.tryParse(v),
@@ -60,6 +70,7 @@ class TeacherQuizCreateView extends GetView<TeacherQuizCreateController> {
               const SizedBox(height: 16),
               SwitchListTile(
                 title: const Text('Activate Quiz'),
+                subtitle: const Text('Students can join if active'),
                 value: c.isActive.value,
                 onChanged: (v) => c.isActive.value = v,
               ),

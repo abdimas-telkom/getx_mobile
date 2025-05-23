@@ -27,7 +27,14 @@ class TeacherQuizCreateController extends GetxController {
   }
 
   Future<void> submit() async {
-    if (title.value.trim().isEmpty) return;
+    if (title.value.trim().isEmpty) {
+      Get.snackbar(
+        'Validation',
+        'Please enter a title',
+        snackPosition: SnackPosition.BOTTOM,
+      );
+      return;
+    }
     isLoading.value = true;
     try {
       final resp = await TeacherQuizService.createQuiz(
@@ -38,16 +45,52 @@ class TeacherQuizCreateController extends GetxController {
         timeLimit: timeLimit.value,
       );
       final quiz = resp['quiz'] as Map<String, dynamic>;
-      Get.toNamed(
-        Routes.TEACHER_ADD_QUESTIONS,
-        arguments: {
-          'quizId': quiz['id'],
-          'quizTitle': quiz['title'],
-          'quizCode': quiz['code'],
-        },
+      final quizId = quiz['id'] as int;
+      final quizTitle = quiz['title'] as String;
+      final quizCode = quiz['code'] as String;
+
+      // Navigate to add questions and await result
+      final added =
+          await Get.toNamed(
+                Routes.TEACHER_ADD_QUESTIONS,
+                arguments: {
+                  'quizId': quizId,
+                  'quizTitle': quizTitle,
+                  'quizCode': quizCode,
+                },
+              )
+              as bool?;
+
+      if (added != true) {
+        // No questions added: delete quiz
+        try {
+          await TeacherQuizService.deleteQuiz(quizId);
+          Get.snackbar(
+            'Canceled',
+            'Quiz canceled: no questions were added.',
+            snackPosition: SnackPosition.BOTTOM,
+          );
+        } catch (e) {
+          Get.snackbar(
+            'Error',
+            'Error deleting empty quiz: ${e.toString()}',
+            snackPosition: SnackPosition.BOTTOM,
+          );
+        }
+        isLoading.value = false;
+        return;
+      }
+
+      // Success
+      Get.snackbar(
+        'Success',
+        'Quiz created successfully!',
+        snackPosition: SnackPosition.BOTTOM,
       );
+      // Go back, signaling success
+      Get.back(result: true);
     } catch (e) {
-      Get.snackbar('Error', e.toString());
+      Get.snackbar('Error', e.toString(), snackPosition: SnackPosition.BOTTOM);
     } finally {
       isLoading.value = false;
     }

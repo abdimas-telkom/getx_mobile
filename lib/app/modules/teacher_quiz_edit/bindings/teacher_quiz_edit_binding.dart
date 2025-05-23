@@ -9,7 +9,7 @@ class TeacherQuizEditBinding extends Bindings {
     Get.lazyPut<TeacherQuizEditController>(
       () => TeacherQuizEditController(
         quizId: args['quizId'] as int,
-        questionData: args['question'],
+        questionData: args['questionData'],
       ),
     );
   }

@@ -1,3 +1,5 @@
+import 'package:ujian_sd_babakan_ciparay/models/quiz_attempt.dart';
+
 import 'api_client.dart';
 
 class TeacherQuizService {
@@ -24,11 +26,23 @@ class TeacherQuizService {
     return resp.data;
   }
 
-  static Future<List<dynamic>> getQuizAttempts(int quizId) async {
+  static Future<List<QuizAttempt>> getQuizAttempts(int quizId) async {
     final resp = await ApiClient.instance.get(
       '/teacher/quizzes/$quizId/attempts',
     );
-    return resp.data['data'] ?? resp.data;
+    if (resp.data is Map && resp.data.containsKey('data')) {
+      return (resp.data['data'] as List)
+          .map<QuizAttempt>((item) => QuizAttempt.fromJson(item))
+          .toList();
+    }
+
+    if (resp.data is List) {
+      return resp.data
+          .map<QuizAttempt>((item) => QuizAttempt.fromJson(item))
+          .toList();
+    }
+
+    return [];
   }
 
   static Future<Map<String, dynamic>> getQuizDetails(int id) async {
