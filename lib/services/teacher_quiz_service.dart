@@ -72,17 +72,11 @@ class TeacherQuizService {
 
   static Future<Map<String, dynamic>> addQuestion(
     int quizId,
-    String questionText,
-    List<Map<String, dynamic>> answers, {
-    int points = 1,
-  }) async {
+    Map<String, dynamic> questionData,
+  ) async {
     final resp = await ApiClient.instance.post(
       '/teacher/quizzes/$quizId/questions',
-      data: {
-        'question_text': questionText,
-        'points': points,
-        'answers': answers,
-      },
+      data: questionData,
     );
     return resp.data;
   }
@@ -90,18 +84,11 @@ class TeacherQuizService {
   static Future<Map<String, dynamic>> updateQuestion(
     int quizId,
     int questionId,
-    String questionText,
-    List<Map<String, dynamic>> answers, {
-    int? points,
-  }) async {
-    final data = {
-      'question_text': questionText,
-      'answers': answers,
-      if (points != null) 'points': points,
-    };
+    Map<String, dynamic> questionData,
+  ) async {
     final resp = await ApiClient.instance.put(
       '/teacher/quizzes/$quizId/questions/$questionId',
-      data: data,
+      data: questionData,
     );
     return resp.data;
   }

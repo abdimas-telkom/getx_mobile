@@ -1,17 +1,17 @@
+// widgets/attempts_stats.dart
 import 'package:flutter/material.dart';
-
 import '../models/quiz_attempt.dart';
-import 'stat_item.dart';
+import 'stat_item.dart'; // Assuming you have this StatItem widget
 
 Widget AttemptsStats(List<QuizAttempt> attempts) {
+  if (attempts.isEmpty) return const SizedBox.shrink();
+
   final total = attempts.length;
-  final completed = attempts
-      .where((a) => a.status.toLowerCase() == 'completed')
-      .length;
-  final scores = attempts
-      .where((a) => a.score > 0)
-      .map((a) => a.score.toDouble())
-      .toList();
+  // Use the new model property to find completed attempts
+  final completed = attempts.where((a) => a.completedAt != null).length;
+
+  // Calculate the average of the raw score (points)
+  final scores = attempts.map((a) => a.score).toList();
   final avgScore = scores.isNotEmpty
       ? scores.reduce((a, b) => a + b) / scores.length
       : 0.0;
@@ -36,9 +36,10 @@ Widget AttemptsStats(List<QuizAttempt> attempts) {
             children: [
               StatItem(label: 'Total Attempts', value: '$total'),
               StatItem(label: 'Completed', value: '$completed'),
+              // Display average score as points, not percentage
               StatItem(
                 label: 'Avg. Score',
-                value: '${avgScore.toStringAsFixed(1)}%',
+                value: '${avgScore.toStringAsFixed(1)} pts',
               ),
             ],
           ),
