@@ -50,6 +50,31 @@ class TeacherQuizEditView extends GetView<TeacherQuizEditController> {
     );
   }
   
+  Widget _buildPointsInput({required dynamic controller}) {
+  return Obx(
+    () {
+      // Determine if a warning should be shown
+      final bool showWarning = controller.points.value > 100;
+
+      return TextFormField(
+        initialValue: controller.points.value.toString(),
+        onChanged: (val) => controller.points.value = int.tryParse(val) ?? 0,
+        decoration: InputDecoration(
+          labelText: 'Poin Maksimal untuk Soal ini', // "Max Points for this Question"
+          border: const OutlineInputBorder(),
+          // Persistent helper text to guide the user
+          helperText: 'Ubah jika soal ini punya bobot lebih tinggi dari yang lain.', // "Change if this question has a different weight"
+          helperMaxLines: 2,
+          // Conditional error/warning text
+          errorText: showWarning ? 'Nilai di atas 100 tidak disarankan.' : null, // "Values above 100 are not recommended."
+          errorStyle: const TextStyle(color: Colors.orange), // Use orange for a warning, not a hard error
+          errorMaxLines: 2,
+        ),
+        keyboardType: TextInputType.number,
+      );
+    },
+  );
+}
   // A card for the details that all questions share
   Widget _buildCommonDetailsCard() {
     return Card(
@@ -68,20 +93,13 @@ class TeacherQuizEditView extends GetView<TeacherQuizEditController> {
               ),
               maxLines: 3,
             ),
+            const SizedBox(height: 16,),
+            _buildPointsInput(controller: controller),
             const SizedBox(height: 16),
             // The dropdown should be disabled if we are editing an existing question
             // as changing the type has complex side-effects.
-            _buildQuestionTypeDropdown(),
+            // _buildQuestionTypeDropdown(),
              const SizedBox(height: 16),
-            TextFormField(
-              initialValue: controller.points.value.toString(),
-              onChanged: (val) => controller.points.value = int.tryParse(val) ?? 0,
-              decoration: const InputDecoration(
-                labelText: 'Points',
-                border: OutlineInputBorder(),
-              ),
-              keyboardType: TextInputType.number,
-            ),
           ],
         ),
       ),
@@ -227,16 +245,6 @@ class TeacherQuizEditView extends GetView<TeacherQuizEditController> {
                           initialValue: answer['answer_text'],
                           onChanged: (val) => controller.weightedAnswers[index]['answer_text'] = val,
                           decoration: InputDecoration(labelText: 'Option ${index + 1}'),
-                        ),
-                      ),
-                      const SizedBox(width: 8),
-                      Expanded(
-                        flex: 1,
-                        child: TextFormField(
-                          initialValue: answer['points'].toString(),
-                          onChanged: (val) => controller.weightedAnswers[index]['points'] = int.tryParse(val) ?? 0,
-                          decoration: const InputDecoration(labelText: 'Points'),
-                          keyboardType: TextInputType.number,
                         ),
                       ),
                       if (controller.weightedAnswers.length > 2)

@@ -81,6 +81,8 @@ class TeacherAddQuestionsView extends GetView<TeacherAddQuestionsController> {
               maxLines: 3,
             ),
             const SizedBox(height: 16),
+            _buildPointsInput(controller: controller),
+            const SizedBox(height: 16),
             _buildQuestionTypeDropdown(),
             const SizedBox(height: 24),
             // A widget that dynamically builds the correct form based on selection
@@ -250,6 +252,32 @@ class TeacherAddQuestionsView extends GetView<TeacherAddQuestionsController> {
           ],
         ));
   }
+
+  Widget _buildPointsInput({required dynamic controller}) {
+  return Obx(
+    () {
+      // Determine if a warning should be shown
+      final bool showWarning = controller.points.value > 100;
+
+      return TextFormField(
+        initialValue: controller.points.value.toString(),
+        onChanged: (val) => controller.points.value = int.tryParse(val) ?? 0,
+        decoration: InputDecoration(
+          labelText: 'Poin Maksimal untuk Soal ini', // "Max Points for this Question"
+          border: const OutlineInputBorder(),
+          // Persistent helper text to guide the user
+          helperText: 'Ubah jika soal ini punya bobot lebih tinggi dari yang lain.', // "Change if this question has a different weight"
+          helperMaxLines: 2,
+          // Conditional error/warning text
+          errorText: showWarning ? 'Nilai di atas 100 tidak disarankan.' : null, // "Values above 100 are not recommended."
+          errorStyle: const TextStyle(color: Colors.orange), // Use orange for a warning, not a hard error
+          errorMaxLines: 2,
+        ),
+        keyboardType: TextInputType.number,
+      );
+    },
+  );
+}
 
   Widget _buildMatchingForm() {
     // Fully implemented
