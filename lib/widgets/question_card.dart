@@ -91,7 +91,7 @@ Widget QuestionCard(Map<String, dynamic> question, int index, int quizId) {
 /// This is the "switcher" widget. It decides which UI to build for the answers.
 Widget _buildAnswerArea(Map<String, dynamic> question) {
   final type = question['question_type'];
-
+  print(type);
   switch (type) {
     case 'multiple_choice_single':
     case 'multiple_choice_multiple':

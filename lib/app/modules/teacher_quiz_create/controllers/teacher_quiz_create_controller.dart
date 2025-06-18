@@ -35,6 +35,14 @@ class TeacherQuizCreateController extends GetxController {
       );
       return;
     }
+    if (timeLimit.value != null && timeLimit.value! < 10) {
+      Get.snackbar(
+        'Validation',
+        'Durasi ujian minimal 10 menit',
+        snackPosition: SnackPosition.BOTTOM,
+      );
+      return;
+    }
     isLoading.value = true;
     try {
       final resp = await TeacherQuizService.createQuiz(

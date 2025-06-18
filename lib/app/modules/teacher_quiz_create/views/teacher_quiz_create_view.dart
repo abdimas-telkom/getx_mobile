@@ -10,22 +10,6 @@ class TeacherQuizCreateView extends GetView<TeacherQuizCreateController> {
 
   @override
   Widget build(BuildContext context) {
-    // Define the specific input decoration for this screen
-    final outlineInputBorder = OutlineInputBorder(
-      borderRadius: BorderRadius.circular(12.0),
-      borderSide: BorderSide(color: Colors.grey.shade400),
-    );
-
-    final inputDecoration = InputDecoration(
-      filled: false,
-      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-      border: outlineInputBorder,
-      enabledBorder: outlineInputBorder.copyWith(),
-      focusedBorder: outlineInputBorder.copyWith(
-        borderSide: const BorderSide(color: primaryColor, width: 1.5),
-      ),
-    );
-
     return Scaffold(
       appBar: AppBar(
         title: const Text(
@@ -50,9 +34,7 @@ class TeacherQuizCreateView extends GetView<TeacherQuizCreateController> {
                 label: 'Judul Ujian',
                 child: TextField(
                   onChanged: (v) => controller.title.value = v,
-                  decoration: inputDecoration.copyWith(
-                    hintText: 'Masukkan Judul Ujian',
-                  ),
+                  decoration: InputDecoration(hintText: 'Masukkan Judul Ujian'),
                 ),
               ),
               const SizedBox(height: 24),
@@ -60,7 +42,7 @@ class TeacherQuizCreateView extends GetView<TeacherQuizCreateController> {
                 label: 'Deskripsi Ujian',
                 child: TextField(
                   onChanged: (v) => controller.description.value = v,
-                  decoration: inputDecoration.copyWith(
+                  decoration: InputDecoration(
                     hintText: 'Masukkan deskripsi dari Ujianmu disini',
                   ),
                   maxLines: 4,
@@ -77,9 +59,7 @@ class TeacherQuizCreateView extends GetView<TeacherQuizCreateController> {
                 const SizedBox(height: 16),
                 TextField(
                   onChanged: (v) => controller.code.value = v,
-                  decoration: inputDecoration.copyWith(
-                    hintText: 'e.g., MTK101',
-                  ),
+                  decoration: InputDecoration(hintText: 'e.g., MTK101'),
                   maxLength: 8,
                 ),
               ],
@@ -89,8 +69,8 @@ class TeacherQuizCreateView extends GetView<TeacherQuizCreateController> {
                 child: TextField(
                   onChanged: (v) =>
                       controller.timeLimit.value = int.tryParse(v),
-                  decoration: inputDecoration.copyWith(
-                    hintText: 'Opsional, Satuan Menit',
+                  decoration: InputDecoration(
+                    hintText: 'Satuan Menit, Minimal 10 menit',
                   ),
                   keyboardType: TextInputType.number,
                 ),

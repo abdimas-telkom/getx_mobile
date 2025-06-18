@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:ujian_sd_babakan_ciparay/themes/colors.dart';
+import 'package:ujian_sd_babakan_ciparay/themes/text_styles.dart';
 import '../controllers/student_quiz_controller.dart';
 
 class StudentQuizView extends GetView<StudentQuizController> {
@@ -8,13 +10,25 @@ class StudentQuizView extends GetView<StudentQuizController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        // Use Obx to make the title reactive
-        title: Obx(() => controller.questions.isEmpty
-            ? const Text('Loading...')
-            : Text(
-                'Question ${controller.currentIndex.value + 1}/${controller.questions.length}')),
-        centerTitle: true,
+      appBar: PreferredSize(
+        preferredSize: const Size.fromHeight(80),
+        child: SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            child: Row(
+              children: [
+                // school logo
+                Image.asset('assets/images/logo.png', height: 40),
+                const SizedBox(width: 12),
+                // title & subtitle
+                const Text(
+                  'SDN 227 Margahayu Utara',
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                ),
+              ],
+            ),
+          ),
+        ),
       ),
       body: Obx(() {
         if (controller.isLoading.value) {
@@ -33,16 +47,36 @@ class StudentQuizView extends GetView<StudentQuizController> {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               // --- Question Text ---
-              Text(
-                question['question_text'],
-                style: Get.textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Obx(() {
+                    return Text(
+                      'Soal ${controller.currentIndex.value + 1}',
+                      style: Get.textTheme.headlineSmall?.copyWith(
+                        fontWeight: FontWeight.bold,
+                      ),
+                    );
+                  }),
+                  Obx(() {
+                    final minutes = controller.remainingSeconds ~/ 60;
+                    final seconds = controller.remainingSeconds % 60;
+                    return Text(
+                      '${minutes.toString().padLeft(2, '0')}:'
+                      '${seconds.toString().padLeft(2, '0')}',
+                      style: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    );
+                  }),
+                ],
               ),
+              Text(question['question_text']),
               const SizedBox(height: 24),
 
               // --- Dynamic Answer Area ---
-              Expanded(
-                child: _buildQuestionBody(question),
-              ),
+              Expanded(child: _buildQuestionBody(question)),
 
               // --- Navigation ---
               const SizedBox(height: 16),
@@ -50,24 +84,42 @@ class StudentQuizView extends GetView<StudentQuizController> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   controller.currentIndex.value > 0
-                      ? OutlinedButton.icon(
+                      ? ElevatedButton.icon(
                           onPressed: controller.previous,
-                          icon: const Icon(Icons.arrow_back),
-                          label: const Text('Previous'),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.white,
+                            side: BorderSide(color: primaryColor),
+                          ),
+                          icon: const Icon(
+                            Icons.arrow_back,
+                            color: primaryColor,
+                          ),
+                          label: const Text('Previous', style: buttonText),
                         )
                       : const SizedBox.shrink(), // Hide button on first question
                   ElevatedButton.icon(
                     onPressed: controller.next,
-                    icon: controller.isSubmitting.value 
+                    icon: controller.isSubmitting.value
                         ? Container(
-                            width: 24, height: 24, 
-                            child: const CircularProgressIndicator(color: Colors.white, strokeWidth: 3,))
-                        : Icon(controller.currentIndex.value == controller.questions.length - 1
-                            ? Icons.check_circle
-                            : Icons.arrow_forward),
-                    label: Text(controller.currentIndex.value == controller.questions.length - 1
-                        ? 'Submit'
-                        : 'Next'),
+                            width: 24,
+                            height: 24,
+                            child: const CircularProgressIndicator(
+                              color: Colors.white,
+                              strokeWidth: 3,
+                            ),
+                          )
+                        : Icon(
+                            controller.currentIndex.value ==
+                                    controller.questions.length - 1
+                                ? Icons.check
+                                : Icons.arrow_forward,
+                          ),
+                    label: Text(
+                      controller.currentIndex.value ==
+                              controller.questions.length - 1
+                          ? 'Submit'
+                          : 'Next',
+                    ),
                   ),
                 ],
               ),
@@ -81,7 +133,7 @@ class StudentQuizView extends GetView<StudentQuizController> {
   /// This widget acts as a router, deciding which UI to build based on question type.
   Widget _buildQuestionBody(Map<String, dynamic> question) {
     final questionType = question['question_type'];
-    
+
     switch (questionType) {
       case 'multiple_choice_single':
         return _buildMultipleChoiceUI(question, isSingleChoice: true);
@@ -101,7 +153,10 @@ class StudentQuizView extends GetView<StudentQuizController> {
   }
 
   /// Builds the UI for both single and multiple choice questions.
-  Widget _buildMultipleChoiceUI(Map<String, dynamic> question, {required bool isSingleChoice}) {
+  Widget _buildMultipleChoiceUI(
+    Map<String, dynamic> question, {
+    required bool isSingleChoice,
+  }) {
     final questionId = question['id'];
     final options = List<Map<String, dynamic>>.from(question['answers']);
 
@@ -116,7 +171,6 @@ class StudentQuizView extends GetView<StudentQuizController> {
 
           if (isSingleChoice) {
             return Card(
-              color: selectedAnswer == optionId ? Get.theme.colorScheme.primaryContainer : null,
               child: RadioListTile<int>(
                 title: Text(option['answer_text']),
                 value: optionId,
@@ -132,7 +186,6 @@ class StudentQuizView extends GetView<StudentQuizController> {
             // For multiple choice
             final List<int> selectedIds = List<int>.from(selectedAnswer ?? []);
             return Card(
-              color: selectedIds.contains(optionId) ? Get.theme.colorScheme.primaryContainer : null,
               child: CheckboxListTile(
                 title: Text(option['answer_text']),
                 value: selectedIds.contains(optionId),
@@ -156,8 +209,11 @@ class StudentQuizView extends GetView<StudentQuizController> {
     final answerOptions = List<String>.from(question['answer_options']);
 
     return Obx(() {
-       final List<Map<String, String>> selectedPairs = List<Map<String, String>>.from(controller.userAnswers[questionId] ?? []);
-      
+      final List<Map<String, String>> selectedPairs =
+          List<Map<String, String>>.from(
+            controller.userAnswers[questionId] ?? [],
+          );
+
       return ListView.builder(
         itemCount: prompts.length,
         itemBuilder: (context, index) {
@@ -170,16 +226,27 @@ class StudentQuizView extends GetView<StudentQuizController> {
 
           return Card(
             child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+              padding: const EdgeInsets.symmetric(
+                horizontal: 16.0,
+                vertical: 8.0,
+              ),
               child: Row(
                 children: [
-                  Expanded(flex: 2, child: Text(prompt, style: const TextStyle(fontWeight: FontWeight.bold))),
+                  Expanded(
+                    flex: 2,
+                    child: Text(
+                      prompt,
+                      style: const TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                  ),
                   const SizedBox(width: 16),
                   Expanded(
                     flex: 3,
                     child: DropdownButton<String>(
                       isExpanded: true,
-                      value: currentSelection!.isEmpty ? null : currentSelection,
+                      value: currentSelection!.isEmpty
+                          ? null
+                          : currentSelection,
                       hint: const Text('Select an answer...'),
                       items: answerOptions.map((option) {
                         return DropdownMenuItem<String>(
@@ -189,7 +256,11 @@ class StudentQuizView extends GetView<StudentQuizController> {
                       }).toList(),
                       onChanged: (newValue) {
                         if (newValue != null) {
-                          controller.selectMatchingAnswer(questionId, prompt, newValue);
+                          controller.selectMatchingAnswer(
+                            questionId,
+                            prompt,
+                            newValue,
+                          );
                         }
                       },
                     ),

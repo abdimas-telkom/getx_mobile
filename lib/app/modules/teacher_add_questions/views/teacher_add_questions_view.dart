@@ -21,24 +21,6 @@ class TeacherAddQuestionsView extends GetView<TeacherAddQuestionsController> {
       QuestionType.matching: 'Pasangan',
     };
 
-    // Define the specific input decoration for this screen
-    final inputDecoration = InputDecoration(
-      filled: false,
-      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-      border: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(12.0),
-        borderSide: BorderSide(color: Colors.grey.shade400),
-      ),
-      enabledBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(12.0),
-        borderSide: BorderSide(color: Colors.grey.shade400),
-      ),
-      focusedBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(12.0),
-        borderSide: const BorderSide(color: primaryColor, width: 1.5),
-      ),
-    );
-
     return PopScope(
       canPop: false,
       onPopInvoked: (didPop) async {
@@ -74,7 +56,7 @@ class TeacherAddQuestionsView extends GetView<TeacherAddQuestionsController> {
                     children: [
                       _buildQuizInfoCard(),
                       const SizedBox(height: 24),
-                      _buildQuestionForm(inputDecoration, questionTypeNames),
+                      _buildQuestionForm(questionTypeNames),
                       const SizedBox(height: 40),
                       ElevatedButton(
                         onPressed: controller.saveQuestion,
@@ -115,10 +97,7 @@ class TeacherAddQuestionsView extends GetView<TeacherAddQuestionsController> {
     );
   }
 
-  Widget _buildQuestionForm(
-    InputDecoration inputDecoration,
-    Map<QuestionType, String> names,
-  ) {
+  Widget _buildQuestionForm(Map<QuestionType, String> names) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -126,9 +105,7 @@ class TeacherAddQuestionsView extends GetView<TeacherAddQuestionsController> {
           label: 'Pertanyaan',
           child: TextFormField(
             onChanged: (v) => controller.questionText.value = v,
-            decoration: inputDecoration.copyWith(
-              hintText: 'Masukkan teks pertanyaan',
-            ),
+            decoration: InputDecoration(hintText: 'Masukkan teks pertanyaan'),
             maxLines: 3,
           ),
         ),
@@ -136,7 +113,7 @@ class TeacherAddQuestionsView extends GetView<TeacherAddQuestionsController> {
         TextFormField(
           initialValue: controller.points.value.toString(),
           onChanged: (v) => controller.points.value = int.tryParse(v) ?? 0,
-          decoration: inputDecoration.copyWith(
+          decoration: InputDecoration(
             labelText: 'Poin Maksimal untuk Soal ini',
           ),
           keyboardType: TextInputType.number,
@@ -149,7 +126,6 @@ class TeacherAddQuestionsView extends GetView<TeacherAddQuestionsController> {
         const SizedBox(height: 16),
         DropdownButtonFormField<QuestionType>(
           value: controller.selectedQuestionType.value,
-          decoration: inputDecoration,
           items: QuestionType.values
               .map(
                 (type) =>
@@ -163,12 +139,12 @@ class TeacherAddQuestionsView extends GetView<TeacherAddQuestionsController> {
         const SizedBox(height: 24),
 
         // --- DYNAMIC ANSWER OPTIONS ---
-        _buildAnswerOptionsSection(inputDecoration),
+        _buildAnswerOptionsSection(),
       ],
     );
   }
 
-  Widget _buildAnswerOptionsSection(InputDecoration inputDecoration) {
+  Widget _buildAnswerOptionsSection() {
     return Obx(() {
       final type = controller.selectedQuestionType.value;
       // Determine if the add button should be shown
@@ -213,26 +189,18 @@ class TeacherAddQuestionsView extends GetView<TeacherAddQuestionsController> {
                 return buildMultipleChoiceForm(
                   controller: controller,
                   isSingleChoice: true,
-                  inputDecoration: inputDecoration,
                 );
               case QuestionType.multipleChoiceMultiple:
                 return buildMultipleChoiceForm(
                   controller: controller,
                   isSingleChoice: false,
-                  inputDecoration: inputDecoration,
                 );
               case QuestionType.trueFalse:
                 return buildTrueFalseForm(controller: controller);
               case QuestionType.weightedOptions:
-                return buildWeightedOptionsForm(
-                  controller: controller,
-                  inputDecoration: inputDecoration,
-                );
+                return buildWeightedOptionsForm(controller: controller);
               case QuestionType.matching:
-                return buildMatchingForm(
-                  controller: controller,
-                  inputDecoration: inputDecoration,
-                );
+                return buildMatchingForm(controller: controller);
             }
           }),
         ],

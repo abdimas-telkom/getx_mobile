@@ -14,6 +14,7 @@ class TeacherQuizEditController extends GetxController
   final isSubmitting = false.obs;
   final questionText = ''.obs;
   final points = 10.obs;
+  final weight = 1.obs;
   @override
   late final Rx<QuestionType> selectedQuestionType; // Initialized in onInit
 
@@ -158,6 +159,7 @@ class TeacherQuizEditController extends GetxController
     final Map<String, dynamic> payload = {
       'question_text': questionText.value,
       'points': points.value,
+      'weight': weight.value,
       'question_type': selectedQuestionType.value.value,
     };
 

@@ -8,7 +8,6 @@ Widget _buildMcOptionRow({
   required IQuestionFormController controller,
   required int index,
   required bool isSingleChoice,
-  required InputDecoration inputDecoration,
 }) {
   final answer = controller.mcAnswers[index];
   return Padding(
@@ -34,7 +33,7 @@ Widget _buildMcOptionRow({
             initialValue: answer['answer_text'],
             onChanged: (val) =>
                 controller.mcAnswers[index]['answer_text'] = val,
-            decoration: inputDecoration.copyWith(hintText: 'Teks Jawaban'),
+            decoration: InputDecoration(hintText: 'Teks Jawaban'),
           ),
         ),
         if (controller.mcAnswers.length > 2)
@@ -50,7 +49,6 @@ Widget _buildMcOptionRow({
 Widget buildMultipleChoiceForm({
   required IQuestionFormController controller,
   required bool isSingleChoice,
-  required InputDecoration inputDecoration,
 }) {
   return Obx(
     () => Column(
@@ -60,7 +58,6 @@ Widget buildMultipleChoiceForm({
           controller: controller,
           index: index,
           isSingleChoice: isSingleChoice,
-          inputDecoration: inputDecoration,
         ),
       ),
     ),
@@ -85,10 +82,7 @@ Widget buildTrueFalseForm({required IQuestionFormController controller}) {
   );
 }
 
-Widget buildWeightedOptionsForm({
-  required IQuestionFormController controller,
-  required InputDecoration inputDecoration,
-}) {
+Widget buildWeightedOptionsForm({required IQuestionFormController controller}) {
   return Obx(
     () => Column(
       children: List.generate(controller.weightedAnswers.length, (index) {
@@ -104,9 +98,7 @@ Widget buildWeightedOptionsForm({
                   initialValue: answer['answer_text'],
                   onChanged: (val) =>
                       controller.weightedAnswers[index]['answer_text'] = val,
-                  decoration: inputDecoration.copyWith(
-                    hintText: 'Teks Jawaban',
-                  ),
+                  decoration: InputDecoration(hintText: 'Teks Jawaban'),
                 ),
               ),
               const SizedBox(width: 16),
@@ -118,7 +110,7 @@ Widget buildWeightedOptionsForm({
                   onChanged: (val) =>
                       controller.weightedAnswers[index]['points'] =
                           int.tryParse(val) ?? 0,
-                  decoration: inputDecoration.copyWith(hintText: 'Poin'),
+                  decoration: InputDecoration(hintText: 'Poin'),
                   keyboardType: TextInputType.number,
                 ),
               ),
@@ -135,10 +127,7 @@ Widget buildWeightedOptionsForm({
   );
 }
 
-Widget buildMatchingForm({
-  required IQuestionFormController controller,
-  required InputDecoration inputDecoration,
-}) {
+Widget buildMatchingForm({required IQuestionFormController controller}) {
   return Obx(
     () => Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -166,7 +155,7 @@ Widget buildMatchingForm({
                     initialValue: pair['prompt'],
                     onChanged: (val) =>
                         controller.matchingPairs[index]['prompt'] = val,
-                    decoration: inputDecoration.copyWith(
+                    decoration: InputDecoration(
                       hintText: 'Pertanyaan ${index + 1}',
                     ),
                   ),
@@ -177,7 +166,7 @@ Widget buildMatchingForm({
                     initialValue: pair['correct_answer'],
                     onChanged: (val) =>
                         controller.matchingPairs[index]['correct_answer'] = val,
-                    decoration: inputDecoration.copyWith(hintText: 'Jawaban'),
+                    decoration: InputDecoration(hintText: 'Jawaban'),
                   ),
                 ),
                 IconButton(
@@ -212,7 +201,7 @@ Widget buildMatchingForm({
                     onChanged: (val) =>
                         controller.distractorAnswers[index]['answer_text'] =
                             val,
-                    decoration: inputDecoration.copyWith(
+                    decoration: InputDecoration(
                       hintText: 'Jawaban Salah ${index + 1}',
                     ),
                   ),

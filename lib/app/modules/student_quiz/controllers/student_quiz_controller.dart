@@ -1,24 +1,32 @@
+import 'dart:async';
+
 import 'package:get/get.dart';
 import 'package:ujian_sd_babakan_ciparay/app/routes/app_pages.dart';
 import 'package:ujian_sd_babakan_ciparay/services/student_quiz_service.dart';
 
 class StudentQuizController extends GetxController {
   final int quizId;
+  late final int initialTimeLimit;
   StudentQuizController({required this.quizId});
 
   // --- STATE ---
   var isLoading = true.obs;
   var isSubmitting = false.obs;
-  
+
   // The list of question objects fetched from the API
   var questions = <Map<String, dynamic>>[].obs;
-  
+
   // The current question index the user is viewing
   var currentIndex = 0.obs;
-  
+
   // The flexible map to store user's answers.
   // Key: questionId, Value: the answer data (int, List<int>, List<Map>, etc.)
   var userAnswers = <int, dynamic>{}.obs;
+
+  // Timer state
+  late Timer _timer;
+  var remainingSeconds = 0.obs;
+  var timerString = ''.obs;
 
   // A computed property to get the current question
   Map<String, dynamic> get currentQuestion => questions[currentIndex.value];
@@ -26,7 +34,31 @@ class StudentQuizController extends GetxController {
   @override
   void onInit() {
     super.onInit();
+    initialTimeLimit = Get.arguments[1] as int;
+    remainingSeconds.value = initialTimeLimit * 60;
+    _startTimer();
     loadQuestions();
+  }
+
+  void _startTimer() {
+    _updateTimerString();
+    _timer = Timer.periodic(const Duration(seconds: 1), (_) {
+      if (remainingSeconds.value > 0) {
+        remainingSeconds.value--;
+        _updateTimerString();
+      } else {
+        // time’s up
+        _timer.cancel();
+        submit(); // auto-submit when out of time
+      }
+    });
+  }
+
+  void _updateTimerString() {
+    final minutes = remainingSeconds.value ~/ 60;
+    final seconds = remainingSeconds.value % 60;
+    timerString.value =
+        '${minutes.toString().padLeft(2, '0')}:${seconds.toString().padLeft(2, '0')}';
   }
 
   Future<void> loadQuestions() async {
@@ -53,24 +85,33 @@ class StudentQuizController extends GetxController {
   /// For Multiple Choice (Multiple Answers)
   void toggleMultiAnswer(int questionId, int answerId) {
     // Get the current list of selected answers for this question, or start a new one.
-    final List<int> currentSelections = List<int>.from(userAnswers[questionId] ?? []);
-    
+    final List<int> currentSelections = List<int>.from(
+      userAnswers[questionId] ?? [],
+    );
+
     if (currentSelections.contains(answerId)) {
       currentSelections.remove(answerId);
     } else {
       currentSelections.add(answerId);
     }
-    
+
     userAnswers[questionId] = currentSelections;
   }
 
   /// For Matching Questions
-  void selectMatchingAnswer(int questionId, String prompt, String selectedAnswer) {
-    final List<Map<String, String>> currentPairs = List<Map<String, String>>.from(userAnswers[questionId] ?? []);
-    
+  void selectMatchingAnswer(
+    int questionId,
+    String prompt,
+    String selectedAnswer,
+  ) {
+    final List<Map<String, String>> currentPairs =
+        List<Map<String, String>>.from(userAnswers[questionId] ?? []);
+
     // Find if a pair with this prompt already exists
-    final int existingIndex = currentPairs.indexWhere((p) => p['prompt'] == prompt);
-    
+    final int existingIndex = currentPairs.indexWhere(
+      (p) => p['prompt'] == prompt,
+    );
+
     if (existingIndex != -1) {
       // Update existing pair
       currentPairs[existingIndex]['selected_answer'] = selectedAnswer;
@@ -78,13 +119,12 @@ class StudentQuizController extends GetxController {
       // Add new pair
       currentPairs.add({'prompt': prompt, 'selected_answer': selectedAnswer});
     }
-    
+
     userAnswers[questionId] = currentPairs;
   }
 
-
   // --- NAVIGATION ---
-  
+
   void next() {
     if (currentIndex.value < questions.length - 1) {
       currentIndex.value++;
@@ -104,7 +144,10 @@ class StudentQuizController extends GetxController {
   Future<void> submit() async {
     // Client-side validation to ensure all questions have been answered.
     if (userAnswers.length != questions.length) {
-      Get.snackbar('Incomplete', 'Please answer all questions before submitting.');
+      Get.snackbar(
+        'Incomplete',
+        'Please answer all questions before submitting.',
+      );
       // Find the first unanswered question and navigate to it
       for (var i = 0; i < questions.length; i++) {
         if (!userAnswers.containsKey(questions[i]['id'])) {
@@ -116,7 +159,7 @@ class StudentQuizController extends GetxController {
     }
 
     isSubmitting.value = true;
-    
+
     // --- PAYLOAD CONSTRUCTION ---
     final List<Map<String, dynamic>> finalPayload = [];
 

@@ -12,23 +12,6 @@ class TeacherQuizEditView extends GetView<TeacherQuizEditController> {
 
   @override
   Widget build(BuildContext context) {
-    final inputDecoration = InputDecoration(
-      filled: false,
-      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-      border: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(12.0),
-        borderSide: BorderSide(color: Colors.grey.shade400),
-      ),
-      enabledBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(12.0),
-        borderSide: BorderSide(color: Colors.grey.shade400),
-      ),
-      focusedBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(12.0),
-        borderSide: const BorderSide(color: primaryColor, width: 1.5),
-      ),
-    );
-
     return Scaffold(
       appBar: AppBar(
         // REMOVED Obx wrapper here, as controller.isNew is not an observable.
@@ -50,9 +33,9 @@ class TeacherQuizEditView extends GetView<TeacherQuizEditController> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    _buildCommonDetailsSection(context, inputDecoration),
+                    _buildCommonDetailsSection(context),
                     const SizedBox(height: 24),
-                    _buildAnswerOptionsSection(context, inputDecoration),
+                    _buildAnswerOptionsSection(context),
                     const SizedBox(height: 40),
                     ElevatedButton(
                       onPressed: controller.save,
@@ -69,10 +52,7 @@ class TeacherQuizEditView extends GetView<TeacherQuizEditController> {
   }
 
   /// Builds the top section for Question Text, Points, and Type.
-  Widget _buildCommonDetailsSection(
-    BuildContext context,
-    InputDecoration inputDecoration,
-  ) {
+  Widget _buildCommonDetailsSection(BuildContext context) {
     final questionTypeNames = {
       QuestionType.multipleChoiceSingle: 'Pilihan Ganda Satu Jawaban',
       QuestionType.multipleChoiceMultiple: 'Pilihan Ganda Beberapa Jawaban',
@@ -89,9 +69,7 @@ class TeacherQuizEditView extends GetView<TeacherQuizEditController> {
           child: TextFormField(
             initialValue: controller.questionText.value,
             onChanged: (v) => controller.questionText.value = v,
-            decoration: inputDecoration.copyWith(
-              hintText: 'Masukkan teks pertanyaan',
-            ),
+            decoration: InputDecoration(hintText: 'Masukkan teks pertanyaan'),
             maxLines: 3,
           ),
         ),
@@ -101,7 +79,7 @@ class TeacherQuizEditView extends GetView<TeacherQuizEditController> {
           child: TextFormField(
             initialValue: controller.points.value.toString(),
             onChanged: (v) => controller.points.value = int.tryParse(v) ?? 10,
-            decoration: inputDecoration.copyWith(hintText: 'Masukkan Poin'),
+            decoration: InputDecoration(hintText: 'Masukkan Poin'),
             keyboardType: TextInputType.number,
           ),
         ),
@@ -112,7 +90,6 @@ class TeacherQuizEditView extends GetView<TeacherQuizEditController> {
           child: Obx(
             () => DropdownButtonFormField<QuestionType>(
               value: controller.selectedQuestionType.value,
-              decoration: inputDecoration,
               onChanged: controller.isNew
                   ? (v) {
                       if (v != null) {
@@ -136,10 +113,7 @@ class TeacherQuizEditView extends GetView<TeacherQuizEditController> {
   }
 
   /// Builds the section for answer options, which changes based on question type.
-  Widget _buildAnswerOptionsSection(
-    BuildContext context,
-    InputDecoration inputDecoration,
-  ) {
+  Widget _buildAnswerOptionsSection(BuildContext context) {
     // This Obx is CORRECT
     return Obx(() {
       final type = controller.selectedQuestionType.value;
@@ -184,26 +158,18 @@ class TeacherQuizEditView extends GetView<TeacherQuizEditController> {
                 return buildMultipleChoiceForm(
                   controller: controller,
                   isSingleChoice: true,
-                  inputDecoration: inputDecoration,
                 );
               case QuestionType.multipleChoiceMultiple:
                 return buildMultipleChoiceForm(
                   controller: controller,
                   isSingleChoice: false,
-                  inputDecoration: inputDecoration,
                 );
               case QuestionType.trueFalse:
                 return buildTrueFalseForm(controller: controller);
               case QuestionType.weightedOptions:
-                return buildWeightedOptionsForm(
-                  controller: controller,
-                  inputDecoration: inputDecoration,
-                );
+                return buildWeightedOptionsForm(controller: controller);
               case QuestionType.matching:
-                return buildMatchingForm(
-                  controller: controller,
-                  inputDecoration: inputDecoration,
-                );
+                return buildMatchingForm(controller: controller);
             }
           }),
         ],

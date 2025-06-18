@@ -35,13 +35,13 @@ class StudentResultView extends GetView<StudentResultController> {
                         ),
                       ),
                       Text(
-                        '${r['percentage']}%',
+                        (r['percentage'] as num).toDouble().toStringAsFixed(2),
                         style: const TextStyle(
                           fontSize: 48,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
-                      Text('${r['score']} of ${r['total_questions']} correct'),
+                      Text('${r['score']} of ${r['total_points']} correct'),
                     ],
                   ),
                 ),

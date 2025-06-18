@@ -80,22 +80,6 @@ class QuizDetailsHeaderView extends GetView<QuizDetailsHeaderController> {
   }
 
   Widget _buildEditableInfoForm() {
-    final inputDecoration = InputDecoration(
-      filled: false,
-      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-      border: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(12.0),
-        borderSide: BorderSide(color: Colors.grey.shade400),
-      ),
-      enabledBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(12.0),
-        borderSide: BorderSide(color: Colors.grey.shade400),
-      ),
-      focusedBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(12.0),
-        borderSide: const BorderSide(color: primaryColor, width: 1.5),
-      ),
-    );
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -103,7 +87,6 @@ class QuizDetailsHeaderView extends GetView<QuizDetailsHeaderController> {
         borderRadius: BorderRadius.circular(12),
       ),
       child: Column(
-        // Added mainAxisSize: MainAxisSize.min to make the card hug its content.
         mainAxisSize: MainAxisSize.min,
         children: [
           Row(
@@ -131,17 +114,13 @@ class QuizDetailsHeaderView extends GetView<QuizDetailsHeaderController> {
           const SizedBox(height: 8),
           FormFieldWithLabel(
             label: 'Judul Ujian',
-            child: TextFormField(
-              controller: controller.titleController,
-              decoration: inputDecoration,
-            ),
+            child: TextFormField(controller: controller.titleController),
           ),
           const SizedBox(height: 16),
           FormFieldWithLabel(
             label: 'Deskripsi Ujian',
             child: TextFormField(
               controller: controller.descriptionController,
-              decoration: inputDecoration,
               maxLines: 3,
             ),
           ),
@@ -150,7 +129,6 @@ class QuizDetailsHeaderView extends GetView<QuizDetailsHeaderController> {
             label: 'Durasi Ujian',
             child: TextFormField(
               initialValue: controller.quizData.value['time_limit'].toString(),
-              decoration: inputDecoration,
               keyboardType: TextInputType.number,
               onChanged: controller.updateTimeLimit,
             ),
