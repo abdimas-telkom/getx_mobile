@@ -8,6 +8,18 @@ Widget AttemptCard(QuizAttempt attempt) {
   final score = attempt.score;
   final date = attempt.startTime;
 
+  Color statusColor;
+  switch (attempt.status.toLowerCase()) {
+    case 'finished':
+      statusColor = Colors.green;
+      break;
+    case 'in progress':
+      statusColor = Colors.orange;
+      break;
+    default:
+      statusColor = Colors.grey;
+  }
+
   return Container(
     margin: const EdgeInsets.only(bottom: 12),
     padding: const EdgeInsets.all(16),
@@ -31,13 +43,16 @@ Widget AttemptCard(QuizAttempt attempt) {
                       vertical: 4,
                     ),
                     decoration: BoxDecoration(
-                      color: greenColor.withOpacity(0.2),
-                      borderRadius: BorderRadius.circular(8),
+                      // The color logic now works correctly with the new ratio
+                      color: score >= 70 ? Colors.green[100] : Colors.red[100],
+                      borderRadius: BorderRadius.circular(4),
                     ),
                     child: Text(
-                      score.toStringAsFixed(0),
-                      style: const TextStyle(
-                        color: greenColor,
+                      '${attempt.score.round()}',
+                      style: TextStyle(
+                        color: score >= 70
+                            ? Colors.green[800]
+                            : Colors.red[800],
                         fontWeight: FontWeight.bold,
                       ),
                     ),
@@ -52,9 +67,7 @@ Widget AttemptCard(QuizAttempt attempt) {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
               decoration: BoxDecoration(
-                color: isFinished
-                    ? greenColor.withOpacity(0.8)
-                    : Colors.orange.withOpacity(0.8),
+                color: statusColor.withOpacity(0.8),
                 borderRadius: BorderRadius.circular(20),
               ),
               child: Text(
