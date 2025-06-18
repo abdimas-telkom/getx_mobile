@@ -1,5 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:ujian_sd_babakan_ciparay/models/question_type.dart';
+import 'package:ujian_sd_babakan_ciparay/themes/colors.dart';
+import 'package:ujian_sd_babakan_ciparay/themes/text_styles.dart';
+import 'package:ujian_sd_babakan_ciparay/widgets/form_field_with_label.dart';
+import 'package:ujian_sd_babakan_ciparay/widgets/Youtube_forms.dart';
 import '../controllers/teacher_quiz_edit_controller.dart';
 
 class TeacherQuizEditView extends GetView<TeacherQuizEditController> {
@@ -7,334 +12,202 @@ class TeacherQuizEditView extends GetView<TeacherQuizEditController> {
 
   @override
   Widget build(BuildContext context) {
+    final inputDecoration = InputDecoration(
+      filled: false,
+      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(12.0),
+        borderSide: BorderSide(color: Colors.grey.shade400),
+      ),
+      enabledBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(12.0),
+        borderSide: BorderSide(color: Colors.grey.shade400),
+      ),
+      focusedBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(12.0),
+        borderSide: const BorderSide(color: primaryColor, width: 1.5),
+      ),
+    );
+
     return Scaffold(
       appBar: AppBar(
-        title: Text(controller.isNew ? 'Add New Question' : 'Edit Question'),
+        // REMOVED Obx wrapper here, as controller.isNew is not an observable.
+        title: Text(
+          controller.isNew ? 'Tambah Soal Baru' : 'Edit Soal',
+          style: const TextStyle(fontWeight: FontWeight.bold),
+        ),
+        backgroundColor: whiteColor,
+        foregroundColor: blackColor,
+        elevation: 0,
         centerTitle: true,
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            // --- Common Question Details ---
-            _buildCommonDetailsCard(),
-            const SizedBox(height: 24),
-
-            // --- Dynamic Form for Answers/Options ---
-            _buildFormBody(),
-            const SizedBox(height: 24),
-            
-            // --- Save Button ---
-            Obx(() => ElevatedButton.icon(
-                  onPressed: controller.isSubmitting.value ? null : controller.save,
-                  icon: controller.isSubmitting.value
-                      ? Container(
-                          width: 24,
-                          height: 24,
-                          padding: const EdgeInsets.all(2.0),
-                          child: const CircularProgressIndicator(
-                            color: Colors.white,
-                            strokeWidth: 3,
-                          ),
-                        )
-                      : const Icon(Icons.save),
-                  label: Text(controller.isNew ? 'CREATE QUESTION' : 'UPDATE QUESTION'),
-                  style: ElevatedButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(vertical: 16),
-                  ),
-                )),
-          ],
-        ),
-      ),
-    );
-  }
-  
-  Widget _buildPointsInput({required dynamic controller}) {
-  return Obx(
-    () {
-      // Determine if a warning should be shown
-      final bool showWarning = controller.points.value > 100;
-
-      return TextFormField(
-        initialValue: controller.points.value.toString(),
-        onChanged: (val) => controller.points.value = int.tryParse(val) ?? 0,
-        decoration: InputDecoration(
-          labelText: 'Poin Maksimal untuk Soal ini', // "Max Points for this Question"
-          border: const OutlineInputBorder(),
-          // Persistent helper text to guide the user
-          helperText: 'Ubah jika soal ini punya bobot lebih tinggi dari yang lain.', // "Change if this question has a different weight"
-          helperMaxLines: 2,
-          // Conditional error/warning text
-          errorText: showWarning ? 'Nilai di atas 100 tidak disarankan.' : null, // "Values above 100 are not recommended."
-          errorStyle: const TextStyle(color: Colors.orange), // Use orange for a warning, not a hard error
-          errorMaxLines: 2,
-        ),
-        keyboardType: TextInputType.number,
-      );
-    },
-  );
-}
-  // A card for the details that all questions share
-  Widget _buildCommonDetailsCard() {
-    return Card(
-      elevation: 2,
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            TextFormField(
-              initialValue: controller.questionText.value,
-              onChanged: (val) => controller.questionText.value = val,
-              decoration: const InputDecoration(
-                labelText: 'Question Text',
-                border: OutlineInputBorder(),
-              ),
-              maxLines: 3,
-            ),
-            const SizedBox(height: 16,),
-            _buildPointsInput(controller: controller),
-            const SizedBox(height: 16),
-            // The dropdown should be disabled if we are editing an existing question
-            // as changing the type has complex side-effects.
-            // _buildQuestionTypeDropdown(),
-             const SizedBox(height: 16),
-          ],
-        ),
-      ),
-    );
-  }
-  
-  Widget _buildQuestionTypeDropdown() {
-    return Obx(
-      () => DropdownButtonFormField<QuestionType>(
-        value: controller.selectedQuestionType.value,
-        decoration: const InputDecoration(labelText: 'Question Type', border: OutlineInputBorder()),
-        // Disable the dropdown if we are editing an existing question
-        onChanged: controller.isNew ? (QuestionType? newValue) {
-          if (newValue != null) {
-            // This method should be added to the controller if you want to allow type changes
-            // controller.onQuestionTypeChanged(newValue);
-          }
-        } : null, // Setting onChanged to null disables the dropdown
-        items: QuestionType.values
-            .map((type) => DropdownMenuItem(
-                  value: type,
-                  child: Text(type.toString().split('.').last.replaceAllMapped(
-                      RegExp(r'([A-Z])'), (match) => ' ${match.group(1)}').capitalizeFirst!),
-                ))
-            .toList(),
-      ),
-    );
-  }
-
-  // This is the core of the dynamic UI
-  Widget _buildFormBody() {
-    return Obx(() {
-      switch (controller.selectedQuestionType.value) {
-        case QuestionType.multipleChoiceSingle:
-          return _buildMultipleChoiceForm(isSingleChoice: true);
-        case QuestionType.multipleChoiceMultiple:
-          return _buildMultipleChoiceForm(isSingleChoice: false);
-        case QuestionType.trueFalse:
-          return _buildTrueFalseForm();
-        case QuestionType.weightedOptions:
-          return _buildWeightedOptionsForm();
-        case QuestionType.matching:
-          return _buildMatchingForm();
-      }
-    });
-  }
-
-  // --- FORM IMPLEMENTATIONS (NO PLACEHOLDERS) ---
-
-  Widget _buildMultipleChoiceForm({required bool isSingleChoice}) {
-    return Card(
-      elevation: 2,
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Obx(() => Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text('Options', style: Get.textTheme.titleMedium),
-            const Divider(),
-            ...List.generate(controller.mcAnswers.length, (index) {
-              final answer = controller.mcAnswers[index];
-              return Row(
-                children: [
-                  isSingleChoice
-                      ? Radio<int>(
-                          value: index,
-                          groupValue: controller.mcAnswers.indexWhere((a) => a['is_correct'] == true),
-                          onChanged: (i) => controller.setCorrectMcAnswer(i!),
-                        )
-                      : Checkbox(
-                          value: answer['is_correct'],
-                          onChanged: (val) => controller.toggleCorrectMcAnswer(index, val!),
-                        ),
-                  Expanded(
-                    child: TextFormField(
-                      initialValue: answer['answer_text'],
-                      onChanged: (val) => controller.mcAnswers[index]['answer_text'] = val,
-                      decoration: InputDecoration(labelText: 'Option ${index + 1}'),
-                    ),
-                  ),
-                  if (controller.mcAnswers.length > 2)
-                    IconButton(
-                      icon: const Icon(Icons.remove_circle_outline, color: Colors.red),
-                      onPressed: () => controller.removeMcOption(index),
-                    )
-                ],
-              );
-            }),
-            TextButton.icon(
-              onPressed: controller.addMcOption,
-              icon: const Icon(Icons.add),
-              label: const Text('Add Option'),
-            )
-          ],
-        )),
-      ),
-    );
-  }
-
-  Widget _buildTrueFalseForm() {
-    return Card(
-        elevation: 2,
-        child: Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Obx(() => Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+      // This Obx is CORRECT because it observes a reactive variable (.isSubmitting.value)
+      body: Obx(
+        () => controller.isSubmitting.value
+            ? const Center(child: CircularProgressIndicator())
+            : SingleChildScrollView(
+                padding: const EdgeInsets.all(24.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    Text('Correct Answer', style: Get.textTheme.titleMedium),
-                    const Divider(),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        const Text('False'),
-                        Switch(
-                          value: controller.tfCorrectAnswer.value,
-                          onChanged: (val) => controller.tfCorrectAnswer.value = val,
-                        ),
-                        const Text('True'),
-                      ],
-                    )
-                  ],
-                ))));
-  }
-
-  Widget _buildWeightedOptionsForm() {
-    return Card(
-      elevation: 2,
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Obx(() => Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text('Options & Points', style: Get.textTheme.titleMedium),
-                const Divider(),
-                ...List.generate(controller.weightedAnswers.length, (index) {
-                  final answer = controller.weightedAnswers[index];
-                  return Row(
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    children: [
-                      Expanded(
-                        flex: 3,
-                        child: TextFormField(
-                          initialValue: answer['answer_text'],
-                          onChanged: (val) => controller.weightedAnswers[index]['answer_text'] = val,
-                          decoration: InputDecoration(labelText: 'Option ${index + 1}'),
-                        ),
-                      ),
-                      if (controller.weightedAnswers.length > 2)
-                        IconButton(
-                          icon: const Icon(Icons.remove_circle_outline, color: Colors.red),
-                          onPressed: () => controller.removeWeightedOption(index),
-                        )
-                    ],
-                  );
-                }),
-                TextButton.icon(
-                  onPressed: controller.addWeightedOption,
-                  icon: const Icon(Icons.add),
-                  label: const Text('Add Option'),
-                )
-              ],
-            )),
-      ),
-    );
-  }
-
-  Widget _buildMatchingForm() {
-    return Card(
-        elevation: 2,
-        child: Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Obx(() => Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text('Prompts & Correct Answers', style: Get.textTheme.titleMedium),
-                    const Divider(),
-                    ...List.generate(controller.matchingPairs.length, (index) {
-                      final pair = controller.matchingPairs[index];
-                      return Row(
-                        crossAxisAlignment: CrossAxisAlignment.end,
-                        children: [
-                          Expanded(
-                            child: TextFormField(
-                              initialValue: pair['prompt'],
-                              onChanged: (val) => controller.matchingPairs[index]['prompt'] = val,
-                              decoration: InputDecoration(labelText: 'Prompt ${index + 1}'),
-                            ),
-                          ),
-                          const SizedBox(width: 8),
-                          Expanded(
-                            child: TextFormField(
-                              initialValue: pair['correct_answer'],
-                              onChanged: (val) => controller.matchingPairs[index]['correct_answer'] = val,
-                              decoration: InputDecoration(labelText: 'Answer ${index + 1}'),
-                            ),
-                          ),
-                          IconButton(
-                            icon: const Icon(Icons.remove_circle_outline, color: Colors.red),
-                            onPressed: () => controller.removeMatchingPair(index),
-                          )
-                        ],
-                      );
-                    }),
-                    TextButton.icon(
-                      onPressed: controller.addMatchingPair,
-                      icon: const Icon(Icons.add),
-                      label: const Text('Add Pair'),
-                    ),
+                    _buildCommonDetailsSection(context, inputDecoration),
                     const SizedBox(height: 24),
-                    Text('Distractors (Optional wrong answers)', style: Get.textTheme.titleMedium),
-                    const Divider(),
-                    ...List.generate(controller.distractorAnswers.length, (index) {
-                      final distractor = controller.distractorAnswers[index];
-                      return Row(
-                        children: [
-                          Expanded(
-                            child: TextFormField(
-                              initialValue: distractor['answer_text'],
-                              onChanged: (val) => controller.distractorAnswers[index]['answer_text'] = val,
-                              decoration: InputDecoration(labelText: 'Distractor ${index + 1}'),
-                            ),
-                          ),
-                          IconButton(
-                            icon: const Icon(Icons.remove_circle_outline, color: Colors.red),
-                            onPressed: () => controller.removeDistractor(index),
-                          )
-                        ],
-                      );
-                    }),
-                    TextButton.icon(
-                      onPressed: controller.addDistractor,
-                      icon: const Icon(Icons.add),
-                      label: const Text('Add Distractor'),
-                    )
+                    _buildAnswerOptionsSection(context, inputDecoration),
+                    const SizedBox(height: 40),
+                    ElevatedButton(
+                      onPressed: controller.save,
+                      // REMOVED Obx wrapper here as well.
+                      child: Text(
+                        controller.isNew ? 'Simpan Soal' : 'Simpan Perubahan',
+                      ),
+                    ),
                   ],
-                ))));
+                ),
+              ),
+      ),
+    );
+  }
+
+  /// Builds the top section for Question Text, Points, and Type.
+  Widget _buildCommonDetailsSection(
+    BuildContext context,
+    InputDecoration inputDecoration,
+  ) {
+    final questionTypeNames = {
+      QuestionType.multipleChoiceSingle: 'Pilihan Ganda Satu Jawaban',
+      QuestionType.multipleChoiceMultiple: 'Pilihan Ganda Beberapa Jawaban',
+      QuestionType.trueFalse: 'Benar atau Salah',
+      QuestionType.weightedOptions: 'Pilihan Berbobot',
+      QuestionType.matching: 'Pasangan',
+    };
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        FormFieldWithLabel(
+          label: 'Pertanyaan',
+          child: TextFormField(
+            initialValue: controller.questionText.value,
+            onChanged: (v) => controller.questionText.value = v,
+            decoration: inputDecoration.copyWith(
+              hintText: 'Masukkan teks pertanyaan',
+            ),
+            maxLines: 3,
+          ),
+        ),
+        const SizedBox(height: 16),
+        FormFieldWithLabel(
+          label: 'Poin Soal',
+          child: TextFormField(
+            initialValue: controller.points.value.toString(),
+            onChanged: (v) => controller.points.value = int.tryParse(v) ?? 10,
+            decoration: inputDecoration.copyWith(hintText: 'Masukkan Poin'),
+            keyboardType: TextInputType.number,
+          ),
+        ),
+        const SizedBox(height: 16),
+        FormFieldWithLabel(
+          label: 'Tipe Soal',
+          // This Obx is CORRECT because it observes a reactive variable (.selectedQuestionType.value)
+          child: Obx(
+            () => DropdownButtonFormField<QuestionType>(
+              value: controller.selectedQuestionType.value,
+              decoration: inputDecoration,
+              onChanged: controller.isNew
+                  ? (v) {
+                      if (v != null) {
+                        controller.selectedQuestionType.value = v;
+                      }
+                    }
+                  : null,
+              items: QuestionType.values
+                  .map(
+                    (type) => DropdownMenuItem(
+                      value: type,
+                      child: Text(questionTypeNames[type]!),
+                    ),
+                  )
+                  .toList(),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  /// Builds the section for answer options, which changes based on question type.
+  Widget _buildAnswerOptionsSection(
+    BuildContext context,
+    InputDecoration inputDecoration,
+  ) {
+    // This Obx is CORRECT
+    return Obx(() {
+      final type = controller.selectedQuestionType.value;
+      final showAddButton =
+          type == QuestionType.multipleChoiceSingle ||
+          type == QuestionType.multipleChoiceMultiple ||
+          type == QuestionType.weightedOptions;
+
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              const Text('Opsi Jawaban', style: formLabel),
+              if (showAddButton)
+                IconButton(
+                  icon: const Icon(
+                    Icons.add_circle_outline,
+                    color: primaryColor,
+                  ),
+                  onPressed: () {
+                    switch (type) {
+                      case QuestionType.multipleChoiceSingle:
+                      case QuestionType.multipleChoiceMultiple:
+                        controller.addMcOption();
+                        break;
+                      case QuestionType.weightedOptions:
+                        controller.addWeightedOption();
+                        break;
+                      default:
+                    }
+                  },
+                ),
+            ],
+          ),
+          const SizedBox(height: 8),
+          // This Obx is also CORRECT
+          Obx(() {
+            switch (controller.selectedQuestionType.value) {
+              case QuestionType.multipleChoiceSingle:
+                return buildMultipleChoiceForm(
+                  controller: controller,
+                  isSingleChoice: true,
+                  inputDecoration: inputDecoration,
+                );
+              case QuestionType.multipleChoiceMultiple:
+                return buildMultipleChoiceForm(
+                  controller: controller,
+                  isSingleChoice: false,
+                  inputDecoration: inputDecoration,
+                );
+              case QuestionType.trueFalse:
+                return buildTrueFalseForm(controller: controller);
+              case QuestionType.weightedOptions:
+                return buildWeightedOptionsForm(
+                  controller: controller,
+                  inputDecoration: inputDecoration,
+                );
+              case QuestionType.matching:
+                return buildMatchingForm(
+                  controller: controller,
+                  inputDecoration: inputDecoration,
+                );
+            }
+          }),
+        ],
+      );
+    });
   }
 }

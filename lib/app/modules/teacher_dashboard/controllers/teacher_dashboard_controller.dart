@@ -6,6 +6,7 @@ import 'package:ujian_sd_babakan_ciparay/services/teacher_quiz_service.dart';
 class TeacherDashboardController extends GetxController {
   var quizzes = <dynamic>[].obs;
   var isLoading = false.obs;
+  final teacherName = 'Alvan'.obs;
 
   @override
   void onInit() {

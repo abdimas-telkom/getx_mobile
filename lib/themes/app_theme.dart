@@ -17,13 +17,37 @@ class AppTheme {
     colorScheme: const ColorScheme.light(
       primary: primaryColor,
       onPrimary: whiteColor,
-      secondary: secondaryColor,
+      secondary: whiteColor,
       onSecondary: primaryColor,
-      background: backgroundColor,
-      onBackground: textBodyColor,
       surface: whiteColor,
       onSurface: textBodyColor,
       error: redColor,
+    ),
+
+    // Define default FloatingActionButton Theme
+    floatingActionButtonTheme: const FloatingActionButtonThemeData(
+      backgroundColor: primaryColor,
+      foregroundColor: whiteColor,
+      elevation: 4.0,
+      shape: CircleBorder(),
+    ),
+
+    // Define default Switch Theme
+    switchTheme: SwitchThemeData(
+      thumbColor: WidgetStateProperty.resolveWith<Color?>((states) {
+        if (states.contains(WidgetState.selected)) {
+          return primaryColor; // Color of the switch thumb when ON
+        }
+        return null; // Uses default color for OFF state
+      }),
+      trackColor: WidgetStateProperty.resolveWith<Color?>((states) {
+        if (states.contains(WidgetState.selected)) {
+          return primaryColor.withValues(
+            alpha: 0.5,
+          ); // Color of the track when ON
+        }
+        return null; // Uses default for OFF state
+      }),
     ),
 
     // Use TextStyles from text_styles.dart
@@ -48,7 +72,7 @@ class AppTheme {
     // Define default InputDecoration Theme for TextFields
     inputDecorationTheme: InputDecorationTheme(
       filled: true,
-      fillColor: secondaryColor,
+      fillColor: whiteColor,
       contentPadding: const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(8.0),

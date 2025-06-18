@@ -30,7 +30,10 @@ class QuizAttemptsList extends StatelessWidget {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text('Quiz Attempts', style: Theme.of(context).textTheme.titleLarge),
+                  Text(
+                    'Quiz Attempts',
+                    style: Theme.of(context).textTheme.titleLarge,
+                  ),
                   IconButton(
                     icon: const Icon(Icons.refresh),
                     onPressed: onRefresh,
@@ -40,7 +43,7 @@ class QuizAttemptsList extends StatelessWidget {
               ),
               const SizedBox(height: 8),
               // Use the refactored stats widget
-              AttemptsStats(attempts), 
+              AttemptsStats(attempts),
               const SizedBox(height: 16),
               if (isLoading && attempts.isEmpty)
                 const Center(child: CircularProgressIndicator())
@@ -48,7 +51,10 @@ class QuizAttemptsList extends StatelessWidget {
                 const Center(
                   child: Padding(
                     padding: EdgeInsets.all(24.0),
-                    child: Text('No attempts yet.', style: TextStyle(color: Colors.grey)),
+                    child: Text(
+                      'No attempts yet.',
+                      style: TextStyle(color: Colors.grey),
+                    ),
                   ),
                 )
               else
@@ -59,7 +65,7 @@ class QuizAttemptsList extends StatelessWidget {
                   itemCount: attempts.length,
                   itemBuilder: (context, index) {
                     final attempt = attempts[index];
-                    return AttemptCard(attempt: attempt);
+                    return AttemptCard(attempt);
                   },
                 ),
             ],

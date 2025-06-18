@@ -8,6 +8,6 @@ Widget AttemptsList(List<QuizAttempt> attempts) {
     shrinkWrap: true,
     physics: const NeverScrollableScrollPhysics(),
     itemCount: attempts.length,
-    itemBuilder: (context, i) => AttemptCard(attempt: attempts[i]),
+    itemBuilder: (context, i) => AttemptCard(attempts[i]),
   );
 }

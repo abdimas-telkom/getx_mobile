@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-
 import 'package:get/get.dart';
-
+import 'package:ujian_sd_babakan_ciparay/themes/colors.dart';
+import 'package:ujian_sd_babakan_ciparay/widgets/form_field_with_label.dart';
+import 'package:ujian_sd_babakan_ciparay/widgets/switch_row.dart';
 import '../controllers/teacher_quiz_create_controller.dart';
 
 class TeacherQuizCreateView extends GetView<TeacherQuizCreateController> {
@@ -9,77 +10,104 @@ class TeacherQuizCreateView extends GetView<TeacherQuizCreateController> {
 
   @override
   Widget build(BuildContext context) {
-    final c = controller;
+    // Define the specific input decoration for this screen
+    final outlineInputBorder = OutlineInputBorder(
+      borderRadius: BorderRadius.circular(12.0),
+      borderSide: BorderSide(color: Colors.grey.shade400),
+    );
+
+    final inputDecoration = InputDecoration(
+      filled: false,
+      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      border: outlineInputBorder,
+      enabledBorder: outlineInputBorder.copyWith(),
+      focusedBorder: outlineInputBorder.copyWith(
+        borderSide: const BorderSide(color: primaryColor, width: 1.5),
+      ),
+    );
+
     return Scaffold(
-      appBar: AppBar(title: const Text('Create New Quiz')),
+      appBar: AppBar(
+        title: const Text(
+          'Buat Ujian',
+          style: TextStyle(fontWeight: FontWeight.bold),
+        ),
+        backgroundColor: whiteColor,
+        foregroundColor: blackColor,
+        elevation: 0,
+        centerTitle: true,
+      ),
       body: Obx(() {
-        if (c.isLoading.value) {
+        if (controller.isLoading.value) {
           return const Center(child: CircularProgressIndicator());
         }
         return SingleChildScrollView(
-          padding: const EdgeInsets.all(16),
+          padding: const EdgeInsets.all(24.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              TextField(
-                onChanged: (v) => c.title.value = v,
-                decoration: const InputDecoration(
-                  labelText: 'Title',
-                  border: OutlineInputBorder(),
+              FormFieldWithLabel(
+                label: 'Judul Ujian',
+                child: TextField(
+                  onChanged: (v) => controller.title.value = v,
+                  decoration: inputDecoration.copyWith(
+                    hintText: 'Masukkan Judul Ujian',
+                  ),
                 ),
               ),
-              const SizedBox(height: 16),
-              TextField(
-                onChanged: (v) => c.description.value = v,
-                decoration: const InputDecoration(
-                  labelText: 'Description (optional)',
-                  border: OutlineInputBorder(),
+              const SizedBox(height: 24),
+              FormFieldWithLabel(
+                label: 'Deskripsi Ujian',
+                child: TextField(
+                  onChanged: (v) => controller.description.value = v,
+                  decoration: inputDecoration.copyWith(
+                    hintText: 'Masukkan deskripsi dari Ujianmu disini',
+                  ),
+                  maxLines: 4,
                 ),
-                maxLines: 3,
               ),
-              const SizedBox(height: 16),
-              SwitchListTile(
-                title: const Text('Custom Code'),
-                subtitle: const Text(
-                  'Create a memorable code for your students',
-                ),
-                value: c.useCustom.value,
-                onChanged: (v) => c.useCustom.value = v,
+              const SizedBox(height: 24),
+              SwitchRow(
+                title: 'Gunakan Kode Kustom',
+                subtitle: 'Buat Kode yang mudah diingat untuk murid',
+                value: controller.useCustom.value,
+                onChanged: (v) => controller.useCustom.value = v,
               ),
-              if (c.useCustom.value) ...[
-                const SizedBox(height: 8),
+              if (controller.useCustom.value) ...[
+                const SizedBox(height: 16),
                 TextField(
-                  onChanged: (v) => c.code.value = v,
-                  decoration: const InputDecoration(
-                    labelText: 'Code',
-                    hintText: 'e.g., MATH101',
-                    border: OutlineInputBorder(),
+                  onChanged: (v) => controller.code.value = v,
+                  decoration: inputDecoration.copyWith(
+                    hintText: 'e.g., MTK101',
                   ),
                   maxLength: 8,
                 ),
               ],
-              const SizedBox(height: 16),
-              TextField(
-                onChanged: (v) => c.timeLimit.value = int.tryParse(v),
-                decoration: const InputDecoration(
-                  labelText: 'Time Limit (min)',
-                  border: OutlineInputBorder(),
+              const SizedBox(height: 24),
+              FormFieldWithLabel(
+                label: 'Durasi Ujian',
+                child: TextField(
+                  onChanged: (v) =>
+                      controller.timeLimit.value = int.tryParse(v),
+                  decoration: inputDecoration.copyWith(
+                    hintText: 'Opsional, Satuan Menit',
+                  ),
+                  keyboardType: TextInputType.number,
                 ),
-                keyboardType: TextInputType.number,
-              ),
-              const SizedBox(height: 16),
-              SwitchListTile(
-                title: const Text('Activate Quiz'),
-                subtitle: const Text('Students can join if active'),
-                value: c.isActive.value,
-                onChanged: (v) => c.isActive.value = v,
               ),
               const SizedBox(height: 24),
-              ElevatedButton(
-                onPressed: c.submit,
-                child: const Text(
-                  'Create Quiz',
-                  style: TextStyle(fontSize: 18),
+              SwitchRow(
+                title: 'Aktifkan Ujian',
+                subtitle: 'Murid bisa langsung masuk ketika kuis aktif',
+                value: controller.isActive.value,
+                onChanged: (v) => controller.isActive.value = v,
+              ),
+              const SizedBox(height: 40),
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  onPressed: controller.submit,
+                  child: const Text('Buat Ujian'),
                 ),
               ),
             ],

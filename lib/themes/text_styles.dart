@@ -64,3 +64,31 @@ const TextStyle inputText = TextStyle(
   fontWeight: FontWeight.normal,
   fontSize: 14,
 );
+
+// --- Card Specific Styles ---
+
+/// For the main title in a card.
+/// Style: bold, size 16, black color
+const TextStyle cardTitle = TextStyle(
+  fontSize: 16,
+  fontWeight: FontWeight.bold,
+  color: blackColor,
+);
+
+/// For subtitle text in a card (e.g., code, question count).
+/// Style: regular, size 12, muted gray color
+const TextStyle cardSubtitle = TextStyle(
+  fontSize: 12,
+  fontWeight: FontWeight.normal,
+  color: textMutedColor,
+);
+
+// --- Forms & Inputs ---
+
+/// For labels above TextFields.
+/// Style: bold, size 14, black color
+const TextStyle formLabel = TextStyle(
+  fontSize: 14,
+  fontWeight: FontWeight.bold,
+  color: blackColor,
+);

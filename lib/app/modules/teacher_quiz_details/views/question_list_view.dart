@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-
 import 'package:get/get.dart';
-import 'package:ujian_sd_babakan_ciparay/widgets/question_card.dart';
-
+import 'package:ujian_sd_babakan_ciparay/themes/colors.dart';
+import 'package:ujian_sd_babakan_ciparay/themes/text_styles.dart';
+import 'package:ujian_sd_babakan_ciparay/widgets/question_display_card.dart';
 import '../controllers/question_list_controller.dart';
 
 class QuestionListView extends GetView<QuestionListController> {
@@ -10,49 +10,46 @@ class QuestionListView extends GetView<QuestionListController> {
 
   @override
   Widget build(BuildContext context) {
-    final c = controller;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        // Header with title and question count
         Padding(
           padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text('Questions', style: Theme.of(context).textTheme.titleLarge),
+              Text(
+                'Detail Pertanyaan',
+                style: Theme.of(context).textTheme.titleLarge,
+              ),
               Obx(
                 () => Text(
-                  '${c.questions.length} questions',
-                  style: const TextStyle(color: Colors.grey),
+                  '${controller.questions.length} pertanyaan',
+                  style: const TextStyle(color: textGreyColor),
                 ),
               ),
             ],
           ),
         ),
-        const Divider(height: 1),
-        const SizedBox(height: 8),
-        // Question list or placeholder
+        const SizedBox(height: 10),
+
         Expanded(
           child: Obx(() {
-            if (c.questions.isEmpty) {
+            if (controller.questions.isEmpty) {
               return const Center(
-                child: Padding(
-                  padding: EdgeInsets.all(24.0),
-                  child: Text(
-                    'No questions yet. Tap the + button to add one.',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(color: Colors.grey),
-                  ),
+                child: Text(
+                  'Belum ada soal.\nKetuk tombol + untuk menambah.',
+                  textAlign: TextAlign.center,
+                  style: cardSubtitle,
                 ),
               );
             }
             return ListView.builder(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0),
-              itemCount: c.questions.length,
+              padding: const EdgeInsets.only(top: 8, bottom: 80),
+              itemCount: controller.questions.length,
               itemBuilder: (_, index) {
-                final q = c.questions[index];
-                return QuestionCard(q, index, c.quizId.value);
+                final q = controller.questions[index];
+                return QuestionDisplayCard(q, index, controller);
               },
             );
           }),

@@ -8,6 +8,7 @@ class StudentDashboardController extends GetxController {
   final codeController = TextEditingController();
   final isLoading = false.obs;
   final errorMessage = ''.obs;
+  final studentName = 'Alvan'.obs;
 
   @override
   void onInit() {

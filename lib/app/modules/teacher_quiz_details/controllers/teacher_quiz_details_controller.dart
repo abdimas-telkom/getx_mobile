@@ -19,6 +19,17 @@ class TeacherQuizDetailsController extends GetxController
   var currentTab = 0.obs;
   late TabController tabController;
 
+  // --- COMPUTED PROPERTIES FOR STATS ---
+  int get totalAttempts => attempts.length;
+  int get completedAttempts =>
+      attempts.where((a) => a.status == 'finished').length;
+  double get averageScore {
+    if (attempts.isEmpty || completedAttempts == 0) return 0.0;
+    final completed = attempts.where((a) => a.status == 'finished');
+    final totalScore = completed.map((a) => a.score).reduce((a, b) => a + b);
+    return totalScore / completed.length;
+  }
+
   @override
   void onInit() {
     super.onInit();
