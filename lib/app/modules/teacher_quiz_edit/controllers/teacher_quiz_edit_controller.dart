@@ -87,7 +87,7 @@ class TeacherQuizEditController extends GetxController
             return {
               'id': a['id'],
               'answer_text': a['answer_text'],
-              'points': ((a['weight'] as double) * 100).round(),
+              'points': ((a['points']) * 100).round(),
             };
           }).toList(),
         );

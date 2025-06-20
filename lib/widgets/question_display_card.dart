@@ -108,14 +108,14 @@ Widget QuestionDisplayCard(
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: options.map((opt) {
-            final weight = (opt['weight'] as num).toDouble();
+            final weight = (opt['points'] as num).toDouble();
             return Padding(
               padding: const EdgeInsets.only(left: 8.0, bottom: 4.0),
               child: Row(
                 children: [
                   Chip(
                     side: BorderSide(color: secondaryColor, width: 1),
-                    label: Text('${(weight * 100).toStringAsFixed(0)}%'),
+                    label: Text((weight * 100).toStringAsFixed(0)),
                     backgroundColor: secondaryColor.withValues(alpha: 0.1),
                     labelStyle: TextStyle(
                       color: primaryColor,
