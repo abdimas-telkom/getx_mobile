@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:ujian_sd_babakan_ciparay/themes/colors.dart';
 
 import '../controllers/auth_controller.dart';
 
@@ -17,7 +18,7 @@ class AuthView extends GetView<AuthController> {
         }
         return SingleChildScrollView(
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20.0),
+            padding: const EdgeInsets.symmetric(horizontal: 24.0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
@@ -52,12 +53,71 @@ class AuthView extends GetView<AuthController> {
                   decoration: const InputDecoration(labelText: 'Username'),
                 ),
                 const SizedBox(height: 16),
-                TextField(
-                  controller: controller.passwordController,
-                  obscureText: true,
-                  // Decoration is also inherited from the theme
-                  decoration: const InputDecoration(labelText: 'Kata Sandi'),
+
+                // --- MODIFIED: Password TextField with visibility toggle ---
+                Obx(
+                  () => TextField(
+                    controller: controller.passwordController,
+                    obscureText: controller.obscurePassword.value,
+                    decoration: InputDecoration(
+                      labelText: 'Kata Sandi',
+                      suffixIcon: IconButton(
+                        icon: Icon(
+                          controller.obscurePassword.value
+                              ? Icons.visibility_off_outlined
+                              : Icons.visibility_outlined,
+                          color: textMutedColor,
+                        ),
+                        onPressed: controller.togglePasswordVisibility,
+                      ),
+                    ),
+                  ),
                 ),
+
+                const SizedBox(height: 8),
+
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Obx(
+                      () => Row(
+                        children: [
+                          Checkbox(
+                            value: controller.rememberMe.value,
+                            onChanged: (value) {
+                              controller.rememberMe.value = value ?? false;
+                            },
+                            activeColor: primaryColor,
+                          ),
+                          GestureDetector(
+                            onTap: () => controller.rememberMe.toggle(),
+                            child: const Text('Ingat Saya'),
+                          ),
+                        ],
+                      ),
+                    ),
+                    TextButton(
+                      onPressed: () {
+                        Get.dialog<bool>(
+                          AlertDialog(
+                            title: const Text('Lupa Kata Sandi?'),
+                            content: const Text(
+                              'Silahkan hubungi admin atau pihak sekolah untuk mengubah kata sandi.',
+                            ),
+                            actions: [
+                              TextButton(
+                                onPressed: () => Get.back(result: false),
+                                child: const Text('CANCEL'),
+                              ),
+                            ],
+                          ),
+                        );
+                      },
+                      child: const Text('Lupa kata sandi?'),
+                    ),
+                  ],
+                ),
+
                 const SizedBox(height: 24),
                 SizedBox(
                   width: double.infinity,
@@ -65,13 +125,6 @@ class AuthView extends GetView<AuthController> {
                     onPressed: controller.handleAuth,
                     child: const Text('Masuk'),
                   ),
-                ),
-                const SizedBox(height: 16),
-                TextButton(
-                  onPressed: () {
-                    print('Lupa kata sandi?');
-                  },
-                  child: const Text('Lupa kata sandi?'),
                 ),
               ],
             ),

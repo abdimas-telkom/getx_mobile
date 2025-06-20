@@ -109,4 +109,9 @@ class TeacherQuizService {
     );
     return resp.data;
   }
+
+  static Future<Map<String, dynamic>> getResults(int attemptId) async {
+    final resp = await ApiClient.instance.get('/teacher/attempts/$attemptId');
+    return resp.data;
+  }
 }

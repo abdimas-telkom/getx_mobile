@@ -5,7 +5,7 @@ import 'package:ujian_sd_babakan_ciparay/themes/text_styles.dart';
 Widget QuizCard({required dynamic quiz, required VoidCallback onTap}) {
   final title = quiz['title'] ?? 'Tanpa Judul';
   final code = quiz['code'] ?? 'N/A';
-  final questionCount = quiz['question_count'] ?? 0;
+  final questionCount = quiz['questions_count'] ?? 0;
 
   return GestureDetector(
     onTap: onTap,

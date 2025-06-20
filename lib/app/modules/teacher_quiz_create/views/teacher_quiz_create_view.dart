@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:ujian_sd_babakan_ciparay/themes/colors.dart';
 import 'package:ujian_sd_babakan_ciparay/widgets/form_field_with_label.dart';
@@ -36,6 +37,7 @@ class TeacherQuizCreateView extends GetView<TeacherQuizCreateController> {
                   onChanged: (v) => controller.title.value = v,
                   decoration: InputDecoration(hintText: 'Masukkan Judul Ujian'),
                 ),
+                isRequired: true,
               ),
               const SizedBox(height: 24),
               FormFieldWithLabel(
@@ -47,6 +49,7 @@ class TeacherQuizCreateView extends GetView<TeacherQuizCreateController> {
                   ),
                   maxLines: 4,
                 ),
+                isRequired: true,
               ),
               const SizedBox(height: 24),
               SwitchRow(
@@ -73,7 +76,9 @@ class TeacherQuizCreateView extends GetView<TeacherQuizCreateController> {
                     hintText: 'Satuan Menit, Minimal 10 menit',
                   ),
                   keyboardType: TextInputType.number,
+                  inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                 ),
+                isRequired: true,
               ),
               const SizedBox(height: 24),
               SwitchRow(

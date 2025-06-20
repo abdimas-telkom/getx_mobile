@@ -1,10 +1,12 @@
 import 'package:get/get.dart';
 import 'package:ujian_sd_babakan_ciparay/app/routes/app_pages.dart';
 import 'package:ujian_sd_babakan_ciparay/services/student_quiz_service.dart';
+import 'package:ujian_sd_babakan_ciparay/services/teacher_quiz_service.dart';
 
 class StudentResultController extends GetxController {
   final int attemptId;
-  StudentResultController({required this.attemptId});
+  final bool isGuru;
+  StudentResultController({required this.attemptId, required this.isGuru});
 
   var results = Rxn<Map<String, dynamic>>();
   var isLoading = true.obs;
@@ -29,11 +31,25 @@ class StudentResultController extends GetxController {
     try {
       results.value = await StudentQuizService.getResults(attemptId);
     } catch (e) {
-      Get.snackbar('Error', e.toString());
+      if (isGuru && e.toString().contains('403')) {
+        results.value = await TeacherQuizService.getResults(attemptId);
+      } else {
+        Get.snackbar(
+          'Error',
+          e.toString(),
+          snackPosition: SnackPosition.BOTTOM,
+        );
+      }
     } finally {
       isLoading.value = false;
     }
   }
 
-  void backHome() => Get.offAllNamed(Routes.STUDENT_DASHBOARD);
+  void backHome() {
+    if (isGuru) {
+      Get.back();
+    } else {
+      Get.offAllNamed(Routes.STUDENT_DASHBOARD);
+    }
+  }
 }

@@ -10,8 +10,9 @@ class StudentResultView extends GetView<StudentResultController> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Quiz Results'),
+        title: const Text('Hasil Ujian'),
         automaticallyImplyLeading: false,
+        centerTitle: true,
       ),
       body: Obx(() {
         if (controller.isLoading.value)
@@ -28,7 +29,7 @@ class StudentResultView extends GetView<StudentResultController> {
                   child: Column(
                     children: [
                       const Text(
-                        'Your Score',
+                        'Nilai Anda',
                         style: TextStyle(
                           fontSize: 24,
                           fontWeight: FontWeight.bold,
@@ -41,7 +42,7 @@ class StudentResultView extends GetView<StudentResultController> {
                           fontWeight: FontWeight.bold,
                         ),
                       ),
-                      Text('${r['score']} of ${r['total_points']} correct'),
+                      // Text('${r['score']} dari ${r['total_points']} skor'),
                     ],
                   ),
                 ),
@@ -60,8 +61,9 @@ class StudentResultView extends GetView<StudentResultController> {
                     subtitle: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text('Your: ${q['user_answer'] ?? '—'}'),
-                        if (!correct) Text('Correct: ${q['correct_answer']}'),
+                        Text('Jawaban anda: ${q['user_answer'] ?? '—'}'),
+                        if (!correct)
+                          Text('Jawaban benar : ${q['correct_answer']}'),
                       ],
                     ),
                   ),
@@ -70,7 +72,7 @@ class StudentResultView extends GetView<StudentResultController> {
               const SizedBox(height: 24),
               ElevatedButton(
                 onPressed: controller.backHome,
-                child: const Text('Back to Dashboard'),
+                child: const Text('Kembali'),
               ),
             ],
           ),

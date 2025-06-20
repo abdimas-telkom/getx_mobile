@@ -42,6 +42,7 @@ class TeacherQuizDetailsController extends GetxController
     loadAttempts();
   }
 
+  @override
   void onClose() {
     tabController.dispose();
     final parent = Get.find<TeacherDashboardController>();

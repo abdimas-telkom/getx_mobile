@@ -15,7 +15,9 @@ class StudentQuizService {
   }
 
   static Future<List<dynamic>> getQuestions(int quizId) async {
-    final resp = await ApiClient.instance.get('/quizzes/$quizId/questions');
+    final resp = await ApiClient.instance.get(
+      '/student/quizzes/$quizId/questions',
+    );
     return resp.data;
   }
 
@@ -24,14 +26,14 @@ class StudentQuizService {
     List<Map<String, dynamic>> answers,
   ) async {
     final resp = await ApiClient.instance.post(
-      '/quizzes/$quizId/submit',
+      '/student/quizzes/$quizId/submit',
       data: {'answers': answers},
     );
     return resp.data;
   }
 
   static Future<Map<String, dynamic>> getResults(int attemptId) async {
-    final resp = await ApiClient.instance.get('/attempts/$attemptId');
+    final resp = await ApiClient.instance.get('/student/attempts/$attemptId');
     return resp.data;
   }
 

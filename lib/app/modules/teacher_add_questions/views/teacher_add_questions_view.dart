@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:ujian_sd_babakan_ciparay/models/question_type.dart';
 import 'package:ujian_sd_babakan_ciparay/themes/colors.dart';
@@ -108,6 +109,7 @@ class TeacherAddQuestionsView extends GetView<TeacherAddQuestionsController> {
             decoration: InputDecoration(hintText: 'Masukkan teks pertanyaan'),
             maxLines: 3,
           ),
+          isRequired: true,
         ),
         const SizedBox(height: 16),
         TextFormField(
@@ -117,6 +119,7 @@ class TeacherAddQuestionsView extends GetView<TeacherAddQuestionsController> {
             labelText: 'Poin Maksimal untuk Soal ini',
           ),
           keyboardType: TextInputType.number,
+          inputFormatters: [FilteringTextInputFormatter.digitsOnly],
         ),
         const SizedBox(height: 8),
         Text(

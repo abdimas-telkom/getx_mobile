@@ -1,4 +1,5 @@
 import 'package:get/get.dart';
+import 'package:ujian_sd_babakan_ciparay/app/modules/teacher_dashboard/controllers/teacher_dashboard_controller.dart';
 import 'package:ujian_sd_babakan_ciparay/app/routes/app_pages.dart';
 import 'package:ujian_sd_babakan_ciparay/services/teacher_quiz_service.dart';
 
@@ -24,6 +25,8 @@ class TeacherQuizCreateController extends GetxController {
   @override
   void onClose() {
     super.onClose();
+    var parent = Get.find<TeacherDashboardController>();
+    parent.loadQuizzes();
   }
 
   Future<void> submit() async {
@@ -65,6 +68,7 @@ class TeacherQuizCreateController extends GetxController {
                   'quizId': quizId,
                   'quizTitle': quizTitle,
                   'quizCode': quizCode,
+                  'questionCount': 0,
                 },
               )
               as bool?;

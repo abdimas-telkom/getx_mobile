@@ -39,10 +39,11 @@ class AuthService {
   static Future<Map<String, dynamic>> login(
     String email,
     String password,
+    bool remember,
   ) async {
     final resp = await ApiClient.instance.post(
       '/login',
-      data: {'email': email, 'password': password},
+      data: {'email': email, 'password': password, 'remember': remember},
     );
     final data = Map<String, dynamic>.from(resp.data);
     final token = data['token'] as String;

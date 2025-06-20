@@ -8,6 +8,8 @@ class AuthController extends GetxController {
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
   final nameController = TextEditingController();
+  final obscurePassword = true.obs;
+  final rememberMe = false.obs;
 
   final isLogin = true.obs;
   final selectedRole = 'student'.obs;
@@ -27,6 +29,10 @@ class AuthController extends GetxController {
   @override
   void onClose() {
     super.onClose();
+  }
+
+  void togglePasswordVisibility() {
+    obscurePassword.value = !obscurePassword.value;
   }
 
   Future<void> _checkToken() async {
@@ -59,7 +65,6 @@ class AuthController extends GetxController {
       Get.snackbar('Error', 'Please enter your name');
       return;
     }
-
     isLoading.value = true;
     try {
       Map<String, dynamic> response;
@@ -67,6 +72,7 @@ class AuthController extends GetxController {
         response = await AuthService.login(
           emailController.text,
           passwordController.text,
+          rememberMe.value,
         );
       } else {
         response = await AuthService.register(

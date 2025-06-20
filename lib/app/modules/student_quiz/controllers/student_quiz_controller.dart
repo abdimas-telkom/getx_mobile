@@ -188,7 +188,10 @@ class StudentQuizController extends GetxController {
 
     try {
       final res = await StudentQuizService.submitAnswers(quizId, finalPayload);
-      Get.offNamed(Routes.STUDENT_RESULT, arguments: res['attempt_id']);
+      Get.offNamed(
+        Routes.STUDENT_RESULT,
+        arguments: {'attemptId': res['attempt_id'], 'isGuru': false},
+      );
     } catch (e) {
       Get.snackbar('Error', 'Failed to submit quiz: ${e.toString()}');
     } finally {
