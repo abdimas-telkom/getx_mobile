@@ -1,8 +1,8 @@
-// controllers/teacher_add_questions_controller.dart
-
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:ujian_sd_babakan_ciparay/contracts/i_question_form_controller.dart';
+import 'package:ujian_sd_babakan_ciparay/models/answer_option.dart';
+import 'package:ujian_sd_babakan_ciparay/models/matching_pair.dart';
 import 'package:ujian_sd_babakan_ciparay/models/question_type.dart';
 import 'package:ujian_sd_babakan_ciparay/services/teacher_quiz_service.dart';
 
@@ -20,32 +20,26 @@ class TeacherAddQuestionsController extends GetxController
 
   // --- STATE MANAGEMENT ---
   final isLoading = false.obs;
-  final questionCount = 0.obs; // Renamed from 'count' for clarity
+  final questionCount = 0.obs;
 
-  // Common state for all question types
+  // Common state
   final questionText = ''.obs;
   final points = 10.obs;
-  final weight = 1.obs;
+
   @override
   final selectedQuestionType = QuestionType.multipleChoiceSingle.obs;
 
-  // State for Multiple Choice (Single and Multiple)
+  // --- STRONGLY-TYPED STATE FOR EACH QUESTION TYPE ---
   @override
-  final mcAnswers = <Map<String, dynamic>>[].obs;
-
-  // State for True/False
+  final mcAnswers = <AnswerOption>[].obs;
   @override
   final tfCorrectAnswer = true.obs;
-
-  // State for Weighted Options
   @override
-  final weightedAnswers = <Map<String, dynamic>>[].obs;
-
-  // State for Matching
+  final weightedAnswers = <AnswerOption>[].obs;
   @override
-  final matchingPairs = <Map<String, dynamic>>[].obs;
+  final matchingPairs = <MatchingPair>[].obs;
   @override
-  final distractorAnswers = <Map<String, dynamic>>[].obs;
+  final distractorAnswers = <AnswerOption>[].obs;
 
   @override
   void onInit() {
@@ -53,24 +47,25 @@ class TeacherAddQuestionsController extends GetxController
     resetForm(); // Initialize the form for the default question type
   }
 
-  /// Resets the form fields based on the currently selected question type.
+  /// Resets the form fields to their default state for adding a new question.
   void resetForm() {
     questionText.value = '';
     points.value = 10;
+    selectedQuestionType.value =
+        QuestionType.multipleChoiceSingle; // Reset type
 
-    // Clear and initialize state for the default type
     mcAnswers.assignAll([
-      {'answer_text': '', 'is_correct': true},
-      {'answer_text': '', 'is_correct': false},
+      AnswerOption(answerText: '', isCorrect: true),
+      AnswerOption(answerText: '', isCorrect: false),
     ]);
     tfCorrectAnswer.value = true;
     weightedAnswers.assignAll([
-      {'answer_text': '', 'points': 10},
-      {'answer_text': '', 'points': 5},
+      AnswerOption(answerText: '', points: 10),
+      AnswerOption(answerText: '', points: 5),
     ]);
     matchingPairs.assignAll([
-      {'prompt': '', 'correct_answer': ''},
-      {'prompt': '', 'correct_answer': ''},
+      MatchingPair(prompt: '', correctAnswer: ''),
+      MatchingPair(prompt: '', correctAnswer: ''),
     ]);
     distractorAnswers.clear();
   }
@@ -78,14 +73,13 @@ class TeacherAddQuestionsController extends GetxController
   /// Called when the user changes the question type from the UI dropdown.
   void onQuestionTypeChanged(QuestionType newType) {
     selectedQuestionType.value = newType;
-    // You can add logic here to preserve data when switching types if needed
   }
 
-  // --- UI HELPER METHODS (You will build UI for these) ---
+  // --- UI HELPER METHODS ---
 
-  // Methods for Multiple Choice
   @override
-  void addMcOption() => mcAnswers.add({'answer_text': '', 'is_correct': false});
+  void addMcOption() =>
+      mcAnswers.add(AnswerOption(answerText: '', isCorrect: false));
   @override
   void removeMcOption(int index) {
     if (mcAnswers.length > 2) mcAnswers.removeAt(index);
@@ -94,44 +88,88 @@ class TeacherAddQuestionsController extends GetxController
   @override
   void setCorrectMcAnswer(int index) {
     for (var i = 0; i < mcAnswers.length; i++) {
-      mcAnswers[i] = {...mcAnswers[i], 'is_correct': i == index};
+      final current = mcAnswers[i];
+      mcAnswers[i] = AnswerOption(
+        id: current.id,
+        answerText: current.answerText,
+        isCorrect: i == index,
+      );
     }
-    mcAnswers.refresh();
   }
 
   @override
   void toggleCorrectMcAnswer(int index, bool value) {
-    mcAnswers[index] = {...mcAnswers[index], 'is_correct': value};
-    mcAnswers.refresh();
+    if (index < mcAnswers.length) {
+      final current = mcAnswers[index];
+      mcAnswers[index] = AnswerOption(
+        id: current.id,
+        answerText: current.answerText,
+        isCorrect: value,
+      );
+    }
   }
 
-  // Methods for Matching Type
+  @override
+  void addWeightedOption() =>
+      weightedAnswers.add(AnswerOption(answerText: '', points: 0));
+  @override
+  void removeWeightedOption(int index) {
+    if (weightedAnswers.length > 2) weightedAnswers.removeAt(index);
+  }
+
   @override
   void addMatchingPair() =>
-      matchingPairs.add({'prompt': '', 'correct_answer': ''});
+      matchingPairs.add(MatchingPair(prompt: '', correctAnswer: ''));
   @override
   void removeMatchingPair(int index) => matchingPairs.removeAt(index);
+
   @override
-  void addDistractor() => distractorAnswers.add({'answer_text': ''});
+  void addDistractor() => distractorAnswers.add(AnswerOption(answerText: ''));
   @override
   void removeDistractor(int index) => distractorAnswers.removeAt(index);
 
-  /// Builds the correct request body and saves the question.
+  /// Validates form data, builds the payload, and saves the question.
   Future<void> saveQuestion() async {
-    // --- CLIENT-SIDE VALIDATION ---
     if (questionText.value.trim().isEmpty) {
       Get.snackbar('Validation Error', 'Question text cannot be empty.');
       return;
     }
 
-    // Add specific validation for the current question type
+    // --- PAYLOAD CONSTRUCTION ---
+    final Map<String, dynamic> payload = {
+      'question_text': questionText.value,
+      'points': points.value,
+      'question_type': selectedQuestionType.value.value,
+    };
+
     switch (selectedQuestionType.value) {
+      case QuestionType.multipleChoiceSingle:
+      case QuestionType.multipleChoiceMultiple:
+        if (mcAnswers.any((a) => a.answerText.trim().isEmpty)) {
+          Get.snackbar(
+            'Validation Error',
+            'All multiple choice options must be filled.',
+          );
+          return;
+        }
+        payload['answers'] = mcAnswers.map((a) => a.toJson()).toList();
+        break;
+      case QuestionType.trueFalse:
+        payload['correct_answer'] = tfCorrectAnswer.value;
+        break;
+      case QuestionType.weightedOptions:
+        if (weightedAnswers.any((a) => a.answerText.trim().isEmpty)) {
+          Get.snackbar(
+            'Validation Error',
+            'All weighted options must be filled.',
+          );
+          return;
+        }
+        payload['answers'] = weightedAnswers.map((a) => a.toJson()).toList();
+        break;
       case QuestionType.matching:
-        // Check if any prompt or answer field is empty
         if (matchingPairs.any(
-          (p) =>
-              p['prompt'].toString().trim().isEmpty ||
-              p['correct_answer'].toString().trim().isEmpty,
+          (p) => p.prompt.trim().isEmpty || p.correctAnswer.trim().isEmpty,
         )) {
           Get.snackbar(
             'Validation Error',
@@ -139,88 +177,19 @@ class TeacherAddQuestionsController extends GetxController
           );
           return;
         }
-        // Check for unique prompts
-        final prompts = matchingPairs
-            .map((p) => p['prompt'].toString().trim())
+        payload['matching_pairs'] = matchingPairs
+            .map((p) => p.toJson())
             .toList();
-        if (prompts.toSet().length != prompts.length) {
-          Get.snackbar(
-            'Validation Error',
-            'All prompts in a matching question must be unique.',
-          );
-          return;
-        }
-        // Check for unique answers
-        final answers = matchingPairs
-            .map((p) => p['correct_answer'].toString().trim())
+        payload['distractor_answers'] = distractorAnswers
+            .map((d) => d.answerText.trim())
+            .where((t) => t.isNotEmpty)
             .toList();
-        if (answers.toSet().length != answers.length) {
-          Get.snackbar(
-            'Validation Error',
-            'All answers in a matching question must be unique.',
-          );
-          return;
-        }
-        break;
-      case QuestionType.multipleChoiceSingle:
-      case QuestionType.multipleChoiceMultiple:
-        if (mcAnswers.any((a) => a['answer_text'].toString().trim().isEmpty)) {
-          Get.snackbar(
-            'Validation Error',
-            'All multiple choice options must be filled.',
-          );
-          return;
-        }
-        break;
-      case QuestionType.weightedOptions:
-        if (weightedAnswers.any(
-          (a) => a['answer_text'].toString().trim().isEmpty,
-        )) {
-          Get.snackbar(
-            'Validation Error',
-            'All weighted options must be filled.',
-          );
-          return;
-        }
-        break;
-      case QuestionType.trueFalse:
-        // No specific validation needed for options
         break;
     }
 
     isLoading.value = true;
-
-    // --- PAYLOAD CONSTRUCTION ---
-    Map<String, dynamic> questionData = {
-      'question_text': questionText.value,
-      'points': points.value,
-      'weight': weight.value,
-      'question_type': selectedQuestionType.value.value,
-    };
-
-    switch (selectedQuestionType.value) {
-      case QuestionType.multipleChoiceSingle:
-      case QuestionType.multipleChoiceMultiple:
-        questionData['answers'] = mcAnswers.toList();
-        break;
-      case QuestionType.trueFalse:
-        questionData['correct_answer'] = tfCorrectAnswer.value;
-        break;
-      case QuestionType.weightedOptions:
-        questionData['answers'] = weightedAnswers.toList();
-        break;
-      case QuestionType.matching:
-        questionData['matching_pairs'] = matchingPairs.toList();
-        questionData['distractor_answers'] = distractorAnswers
-            .map((d) => d['answer_text'].toString().trim())
-            .where((t) => t.isNotEmpty) // Only include non-empty distractors
-            .toList();
-        break;
-    }
-
     try {
-      await TeacherQuizService.addQuestion(quizId, questionData);
-
+      await TeacherQuizService.addQuestion(quizId, payload);
       questionCount.value++;
       Get.snackbar(
         'Success',
@@ -241,22 +210,19 @@ class TeacherAddQuestionsController extends GetxController
     }
   }
 
-  // Your confirmCancel and finishQuiz logic is well-designed and doesn't need changes.
-  // Just ensure you use `questionCount` instead of `count`.
+  // --- FINISH & CANCEL LOGIC ---
+
   Future<void> finishQuiz() async {
     if (questionCount.value == 0) {
       Get.snackbar('No Questions', 'Please add at least one question.');
       return;
     }
-    Get.back(result: true); // Signal success to the previous screen
+    Get.back(result: true);
   }
 
-  // A computed property to check if there are any unsaved changes
   bool get hasUnsavedChanges => questionText.value.trim().isNotEmpty;
 
-  // The dialog logic for confirming cancellation
   Future<bool> confirmCancel() async {
-    // Only show the dialog if there are added questions or unsaved changes
     if (questionCount.value > 0 || hasUnsavedChanges) {
       final result = await Get.dialog<bool>(
         AlertDialog(
@@ -264,7 +230,7 @@ class TeacherAddQuestionsController extends GetxController
           content: Text(
             questionCount.value > 0
                 ? 'You have added ${questionCount.value} questions. If you go back, the quiz will be saved with these questions.'
-                : 'You have unsaved changes for the current question. If you go back, the quiz will be deleted.',
+                : 'You have unsaved changes. If you go back, they will be lost.',
           ),
           actions: [
             TextButton(
@@ -280,15 +246,9 @@ class TeacherAddQuestionsController extends GetxController
       );
       return result ?? false;
     }
-    // If there's nothing to lose, just allow popping the screen
     return true;
   }
 
   @override
-  void addWeightedOption() =>
-      weightedAnswers.add({'answer_text': '', 'points': 0});
-  @override
-  void removeWeightedOption(int index) {
-    if (weightedAnswers.length > 2) weightedAnswers.removeAt(index);
-  }
+  dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
 }

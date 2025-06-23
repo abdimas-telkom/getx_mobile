@@ -46,7 +46,7 @@ Widget AttemptCard(QuizAttempt attempt) {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(attempt.studentName ?? 'Unknown Student', style: cardTitle),
+              Text(attempt.studentName, style: cardTitle),
               Row(
                 children: [
                   if (isFinished)

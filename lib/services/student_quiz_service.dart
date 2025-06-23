@@ -1,3 +1,4 @@
+import 'package:ujian_sd_babakan_ciparay/models/question.dart';
 import 'api_client.dart';
 
 class StudentQuizService {
@@ -14,11 +15,11 @@ class StudentQuizService {
     return resp.data;
   }
 
-  static Future<List<dynamic>> getQuestions(int quizId) async {
+  static Future<List<Question>> getQuestions(int quizId) async {
     final resp = await ApiClient.instance.get(
       '/student/quizzes/$quizId/questions',
     );
-    return resp.data;
+    return (resp.data as List).map((json) => Question.fromJson(json)).toList();
   }
 
   static Future<Map<String, dynamic>> submitAnswers(

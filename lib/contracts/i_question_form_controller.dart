@@ -1,18 +1,27 @@
 import 'package:get/get.dart';
+import 'package:ujian_sd_babakan_ciparay/models/answer_option.dart';
+import 'package:ujian_sd_babakan_ciparay/models/matching_pair.dart';
 import 'package:ujian_sd_babakan_ciparay/models/question_type.dart';
 
-/// An interface that defines the required members for any controller
-/// that wants to use the shared question answer form widgets.
 abstract class IQuestionFormController {
   // --- STATE PROPERTIES ---
-  RxList<Map<String, dynamic>> get mcAnswers;
-  RxBool get tfCorrectAnswer;
-  RxList<Map<String, dynamic>> get weightedAnswers;
-  RxList<Map<String, dynamic>> get matchingPairs;
-  RxList<Map<String, dynamic>> get distractorAnswers;
-  Rx<QuestionType> get selectedQuestionType;
+  // The interface now uses the same strongly-typed models as the controller.
 
-  // --- METHODS ---
+  abstract Rx<QuestionType> selectedQuestionType;
+
+  abstract RxList<AnswerOption> mcAnswers;
+
+  abstract RxBool tfCorrectAnswer;
+
+  abstract RxList<AnswerOption> weightedAnswers;
+
+  abstract RxList<MatchingPair> matchingPairs;
+
+  abstract RxList<AnswerOption> distractorAnswers;
+
+  // --- UI HELPER METHODS ---
+  // These method signatures are also updated for type safety.
+
   void addMcOption();
   void removeMcOption(int index);
   void setCorrectMcAnswer(int index);

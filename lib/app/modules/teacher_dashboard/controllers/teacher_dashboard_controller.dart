@@ -1,10 +1,11 @@
 import 'package:get/get.dart';
 import 'package:ujian_sd_babakan_ciparay/app/routes/app_pages.dart';
+import 'package:ujian_sd_babakan_ciparay/models/quiz.dart';
 import 'package:ujian_sd_babakan_ciparay/services/auth_service.dart';
 import 'package:ujian_sd_babakan_ciparay/services/teacher_quiz_service.dart';
 
 class TeacherDashboardController extends GetxController {
-  var quizzes = <dynamic>[].obs;
+  var quizzes = <Quiz>[].obs;
   var isLoading = false.obs;
   final teacherName = 'Alvan'.obs;
 

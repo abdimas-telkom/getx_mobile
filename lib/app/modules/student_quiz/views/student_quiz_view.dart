@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:ujian_sd_babakan_ciparay/models/question.dart';
+import 'package:ujian_sd_babakan_ciparay/models/question_type.dart';
 import 'package:ujian_sd_babakan_ciparay/themes/colors.dart';
-import 'package:ujian_sd_babakan_ciparay/themes/text_styles.dart';
+import 'package:ujian_sd_babakan_ciparay/widgets/question_navigation_drawer.dart';
 import '../controllers/student_quiz_controller.dart';
 
 class StudentQuizView extends GetView<StudentQuizController> {
@@ -9,7 +11,11 @@ class StudentQuizView extends GetView<StudentQuizController> {
 
   @override
   Widget build(BuildContext context) {
+    final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
+    const buttonText = TextStyle(color: primaryColor);
+
     return Scaffold(
+      key: scaffoldKey,
       appBar: PreferredSize(
         preferredSize: const Size.fromHeight(80),
         child: SafeArea(
@@ -17,10 +23,8 @@ class StudentQuizView extends GetView<StudentQuizController> {
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
             child: Row(
               children: [
-                // school logo
                 Image.asset('assets/images/logo.png', height: 40),
                 const SizedBox(width: 12),
-                // title & subtitle
                 const Text(
                   'SDN 227 Margahayu Utara',
                   style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
@@ -30,6 +34,7 @@ class StudentQuizView extends GetView<StudentQuizController> {
           ),
         ),
       ),
+      endDrawer: const QuestionNavigationDrawer(),
       body: Obx(() {
         if (controller.isLoading.value) {
           return const Center(child: CircularProgressIndicator());
@@ -38,127 +43,143 @@ class StudentQuizView extends GetView<StudentQuizController> {
           return const Center(child: Text('No questions found for this quiz.'));
         }
 
-        // Get the current question map from the controller
         final question = controller.currentQuestion;
 
-        return Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              // --- Question Text ---
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        return Stack(
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  Obx(() {
-                    return Text(
-                      'Soal ${controller.currentIndex.value + 1}',
-                      style: Get.textTheme.headlineSmall?.copyWith(
-                        fontWeight: FontWeight.bold,
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        'Soal ${controller.currentIndex.value + 1}',
+                        style: Get.textTheme.headlineSmall?.copyWith(
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
-                    );
-                  }),
-                  Obx(() {
-                    final minutes = controller.remainingSeconds ~/ 60;
-                    final seconds = controller.remainingSeconds % 60;
-                    return Text(
-                      '${minutes.toString().padLeft(2, '0')}:'
-                      '${seconds.toString().padLeft(2, '0')}',
-                      style: const TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
+                      Text(
+                        controller.timerString.value,
+                        style: const TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                        ),
                       ),
-                    );
-                  }),
-                ],
-              ),
-              Text(question['question_text']),
-              const SizedBox(height: 24),
-
-              // --- Dynamic Answer Area ---
-              Expanded(child: _buildQuestionBody(question)),
-
-              // --- Navigation ---
-              const SizedBox(height: 16),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  controller.currentIndex.value > 0
-                      ? ElevatedButton.icon(
-                          onPressed: controller.previous,
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.white,
-                            side: BorderSide(color: primaryColor),
-                          ),
-                          icon: const Icon(
-                            Icons.arrow_back,
-                            color: primaryColor,
-                          ),
-                          label: const Text('Previous', style: buttonText),
-                        )
-                      : const SizedBox.shrink(), // Hide button on first question
-                  ElevatedButton.icon(
-                    onPressed: controller.next,
-                    icon: controller.isSubmitting.value
-                        ? Container(
-                            width: 24,
-                            height: 24,
-                            child: const CircularProgressIndicator(
-                              color: Colors.white,
-                              strokeWidth: 3,
-                            ),
-                          )
-                        : Icon(
-                            controller.currentIndex.value ==
-                                    controller.questions.length - 1
-                                ? Icons.check
-                                : Icons.arrow_forward,
-                          ),
-                    label: Text(
-                      controller.currentIndex.value ==
-                              controller.questions.length - 1
-                          ? 'Submit'
-                          : 'Next',
-                    ),
+                    ],
+                  ),
+                  Text(question.questionText),
+                  const SizedBox(height: 24),
+                  Expanded(child: _buildQuestionBody(question)),
+                  const SizedBox(height: 16),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      controller.currentIndex.value > 0
+                          ? ElevatedButton.icon(
+                              onPressed: controller.previous,
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.white,
+                                side: const BorderSide(color: primaryColor),
+                              ),
+                              icon: const Icon(
+                                Icons.arrow_back,
+                                color: primaryColor,
+                              ),
+                              label: const Text('Previous', style: buttonText),
+                            )
+                          : const SizedBox.shrink(),
+                      ElevatedButton.icon(
+                        onPressed: controller.next,
+                        icon: controller.isSubmitting.value
+                            ? Container(
+                                width: 24,
+                                height: 24,
+                                child: const CircularProgressIndicator(
+                                  color: Colors.white,
+                                  strokeWidth: 3,
+                                ),
+                              )
+                            : Icon(
+                                controller.currentIndex.value ==
+                                        controller.questions.length - 1
+                                    ? Icons.check
+                                    : Icons.arrow_forward,
+                              ),
+                        label: Text(
+                          controller.currentIndex.value ==
+                                  controller.questions.length - 1
+                              ? 'Submit'
+                              : 'Next',
+                        ),
+                      ),
+                    ],
                   ),
                 ],
               ),
-            ],
-          ),
+            ),
+            Positioned(
+              right: -5,
+              top:
+                  MediaQuery.of(context).size.height -
+                  (MediaQuery.of(context).size.height / 2.5),
+              child: Material(
+                color: Colors.white,
+                elevation: 4.0,
+                borderRadius: const BorderRadius.only(
+                  topLeft: Radius.circular(30),
+                  bottomLeft: Radius.circular(30),
+                ),
+                clipBehavior: Clip.antiAlias,
+                child: IconButton(
+                  icon: const Icon(
+                    Icons.arrow_right_alt_rounded,
+                    color: primaryColor,
+                    size: 20,
+                  ),
+                  onPressed: () {
+                    scaffoldKey.currentState?.openEndDrawer();
+                  },
+                  padding: const EdgeInsets.only(
+                    left: 18,
+                    right: 10,
+                    top: 10,
+                    bottom: 10,
+                  ),
+                ),
+              ),
+            ),
+          ],
         );
       }),
     );
   }
 
-  /// This widget acts as a router, deciding which UI to build based on question type.
-  Widget _buildQuestionBody(Map<String, dynamic> question) {
-    final questionType = question['question_type'];
+  Widget _buildQuestionBody(Question question) {
+    final questionType = question.questionType;
 
     switch (questionType) {
-      case 'multiple_choice_single':
+      case QuestionType.multipleChoiceSingle:
         return _buildMultipleChoiceUI(question, isSingleChoice: true);
-      case 'multiple_choice_multiple':
+      case QuestionType.multipleChoiceMultiple:
         return _buildMultipleChoiceUI(question, isSingleChoice: false);
-      case 'true_false':
-        // True/False is just a specific case of single-choice
+      case QuestionType.trueFalse:
         return _buildMultipleChoiceUI(question, isSingleChoice: true);
-      case 'weighted_options':
-        // Weighted options are also single-choice from the student's perspective
+      case QuestionType.weightedOptions:
         return _buildMultipleChoiceUI(question, isSingleChoice: true);
-      case 'matching':
+      case QuestionType.matching:
         return _buildMatchingUI(question);
-      default:
-        return Center(child: Text('Unsupported question type: $questionType'));
     }
   }
 
-  /// Builds the UI for both single and multiple choice questions.
   Widget _buildMultipleChoiceUI(
-    Map<String, dynamic> question, {
+    Question question, {
     required bool isSingleChoice,
   }) {
-    final questionId = question['id'];
-    final options = List<Map<String, dynamic>>.from(question['answers']);
+    final questionId = question.id;
+    final options = question.answers;
 
     return Obx(() {
       final dynamic selectedAnswer = controller.userAnswers[questionId];
@@ -167,13 +188,13 @@ class StudentQuizView extends GetView<StudentQuizController> {
         itemCount: options.length,
         itemBuilder: (context, index) {
           final option = options[index];
-          final optionId = option['id'];
+          final optionId = option.id;
 
           if (isSingleChoice) {
             return Card(
               child: RadioListTile<int>(
-                title: Text(option['answer_text']),
-                value: optionId,
+                title: Text(option.answerText),
+                value: optionId as int,
                 groupValue: selectedAnswer,
                 onChanged: (value) {
                   if (value != null) {
@@ -183,15 +204,14 @@ class StudentQuizView extends GetView<StudentQuizController> {
               ),
             );
           } else {
-            // For multiple choice
             final List<int> selectedIds = List<int>.from(selectedAnswer ?? []);
             return Card(
               child: CheckboxListTile(
-                title: Text(option['answer_text']),
+                title: Text(option.answerText),
                 value: selectedIds.contains(optionId),
                 onChanged: (value) {
                   if (value != null) {
-                    controller.toggleMultiAnswer(questionId, optionId);
+                    controller.toggleMultiAnswer(questionId, optionId!);
                   }
                 },
               ),
@@ -202,11 +222,18 @@ class StudentQuizView extends GetView<StudentQuizController> {
     });
   }
 
-  /// Builds the UI for matching questions.
-  Widget _buildMatchingUI(Map<String, dynamic> question) {
-    final questionId = question['id'];
-    final prompts = List<String>.from(question['prompts']);
-    final answerOptions = List<String>.from(question['answer_options']);
+  // --- THIS METHOD IS NOW CORRECTED ---
+  Widget _buildMatchingUI(Question question) {
+    final questionId = question.id;
+
+    // *** FIX: Get prompts directly from question.prompts ***
+    final prompts = question.prompts;
+
+    // *** FIX: Get answer options directly from question.distractorAnswers ***
+    // The `distractorAnswers` list now holds AnswerOption objects.
+    final answerOptions = question.distractorAnswers
+        .map((opt) => opt.answerText)
+        .toList();
 
     return Obx(() {
       final List<Map<String, String>> selectedPairs =
@@ -215,6 +242,7 @@ class StudentQuizView extends GetView<StudentQuizController> {
           );
 
       return ListView.builder(
+        // The itemCount is now based on the length of the prompts list.
         itemCount: prompts.length,
         itemBuilder: (context, index) {
           final prompt = prompts[index];
@@ -247,7 +275,7 @@ class StudentQuizView extends GetView<StudentQuizController> {
                       value: currentSelection!.isEmpty
                           ? null
                           : currentSelection,
-                      hint: const Text('Select an answer...'),
+                      hint: const Text('Pilih Jawaban...'),
                       items: answerOptions.map((option) {
                         return DropdownMenuItem<String>(
                           value: option,

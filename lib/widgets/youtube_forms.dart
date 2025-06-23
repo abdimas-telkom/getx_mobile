@@ -19,20 +19,19 @@ Widget _buildMcOptionRow({
             ? Radio<int>(
                 value: index,
                 groupValue: controller.mcAnswers.indexWhere(
-                  (a) => a['is_correct'] == true,
+                  (a) => a.isCorrect == true,
                 ),
                 onChanged: (i) => controller.setCorrectMcAnswer(i!),
               )
             : Checkbox(
-                value: answer['is_correct'],
+                value: answer.isCorrect,
                 onChanged: (val) =>
                     controller.toggleCorrectMcAnswer(index, val!),
               ),
         Expanded(
           child: TextFormField(
-            initialValue: answer['answer_text'],
-            onChanged: (val) =>
-                controller.mcAnswers[index]['answer_text'] = val,
+            initialValue: answer.answerText,
+            onChanged: (val) => controller.mcAnswers[index].answerText = val,
             decoration: InputDecoration(hintText: 'Teks Jawaban'),
           ),
         ),
@@ -95,9 +94,9 @@ Widget buildWeightedOptionsForm({required IQuestionFormController controller}) {
               Expanded(
                 flex: 3,
                 child: TextFormField(
-                  initialValue: answer['answer_text'],
+                  initialValue: answer.answerText,
                   onChanged: (val) =>
-                      controller.weightedAnswers[index]['answer_text'] = val,
+                      controller.weightedAnswers[index].answerText = val,
                   decoration: InputDecoration(hintText: 'Teks Jawaban'),
                 ),
               ),
@@ -105,11 +104,10 @@ Widget buildWeightedOptionsForm({required IQuestionFormController controller}) {
               SizedBox(
                 width: 70,
                 child: TextFormField(
-                  initialValue: answer['points'].toString(),
+                  initialValue: answer.points.toString(),
                   textAlign: TextAlign.center,
-                  onChanged: (val) =>
-                      controller.weightedAnswers[index]['points'] =
-                          int.tryParse(val) ?? 0,
+                  onChanged: (val) => controller.weightedAnswers[index].points =
+                      (int.tryParse(val) ?? 0) as double?,
                   decoration: InputDecoration(hintText: 'Poin'),
                   keyboardType: TextInputType.number,
                 ),
@@ -152,9 +150,9 @@ Widget buildMatchingForm({required IQuestionFormController controller}) {
               children: [
                 Expanded(
                   child: TextFormField(
-                    initialValue: pair['prompt'],
+                    initialValue: pair.prompt,
                     onChanged: (val) =>
-                        controller.matchingPairs[index]['prompt'] = val,
+                        controller.matchingPairs[index].prompt = val,
                     decoration: InputDecoration(
                       hintText: 'Pertanyaan ${index + 1}',
                     ),
@@ -163,9 +161,9 @@ Widget buildMatchingForm({required IQuestionFormController controller}) {
                 const SizedBox(width: 8),
                 Expanded(
                   child: TextFormField(
-                    initialValue: pair['correct_answer'],
+                    initialValue: pair.correctAnswer,
                     onChanged: (val) =>
-                        controller.matchingPairs[index]['correct_answer'] = val,
+                        controller.matchingPairs[index].correctAnswer = val,
                     decoration: InputDecoration(hintText: 'Jawaban'),
                   ),
                 ),
@@ -197,10 +195,9 @@ Widget buildMatchingForm({required IQuestionFormController controller}) {
               children: [
                 Expanded(
                   child: TextFormField(
-                    initialValue: distractor['answer_text'],
+                    initialValue: distractor.answerText,
                     onChanged: (val) =>
-                        controller.distractorAnswers[index]['answer_text'] =
-                            val,
+                        controller.distractorAnswers[index].answerText = val,
                     decoration: InputDecoration(
                       hintText: 'Jawaban Salah ${index + 1}',
                     ),

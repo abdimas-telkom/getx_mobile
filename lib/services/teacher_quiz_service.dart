@@ -1,3 +1,4 @@
+import 'package:ujian_sd_babakan_ciparay/models/quiz.dart';
 import 'package:ujian_sd_babakan_ciparay/models/quiz_attempt.dart';
 
 import 'api_client.dart';
@@ -21,9 +22,9 @@ class TeacherQuizService {
     return resp.data;
   }
 
-  static Future<List<dynamic>> getQuizzes() async {
+  static Future<List<Quiz>> getQuizzes() async {
     final resp = await ApiClient.instance.get('/teacher/quizzes');
-    return resp.data;
+    return (resp.data as List).map((json) => Quiz.fromJson(json)).toList();
   }
 
   static Future<List<QuizAttempt>> getQuizAttempts(int quizId) async {
@@ -45,9 +46,9 @@ class TeacherQuizService {
     return [];
   }
 
-  static Future<Map<String, dynamic>> getQuizDetails(int id) async {
+  static Future<Quiz> getQuizDetails(int id) async {
     final resp = await ApiClient.instance.get('/teacher/quizzes/$id');
-    return resp.data;
+    return Quiz.fromJson(resp.data);
   }
 
   static Future<Map<String, dynamic>> updateQuiz(

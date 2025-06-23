@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:ujian_sd_babakan_ciparay/app/modules/teacher_quiz_details/controllers/teacher_quiz_details_controller.dart';
 import 'package:ujian_sd_babakan_ciparay/themes/colors.dart';
 import 'package:ujian_sd_babakan_ciparay/themes/text_styles.dart';
 import 'package:ujian_sd_babakan_ciparay/widgets/form_field_with_label.dart';
@@ -11,6 +12,8 @@ class QuizDetailsHeaderView extends GetView<QuizDetailsHeaderController> {
 
   @override
   Widget build(BuildContext context) {
+    // We need the parent controller to display read-only info
+    Get.find<TeacherQuizDetailsController>();
     return Obx(
       () => controller.isEditing.value
           ? _buildEditableInfoForm()
@@ -19,9 +22,16 @@ class QuizDetailsHeaderView extends GetView<QuizDetailsHeaderController> {
   }
 
   Widget _buildReadOnlyInfoCard() {
-    final data = controller.quizData.value;
-    final timeLimit = (data['time_limit'] ?? 0) as int;
-    final isActive = (data['is_active'] ?? false) as bool;
+    // The source of truth for read-only data is the parent controller
+    final parentController = Get.find<TeacherQuizDetailsController>();
+    final quiz = parentController.quizData.value;
+
+    // Show a loader or empty state if quiz data isn't available yet
+    if (quiz == null) {
+      return const Center(child: CircularProgressIndicator());
+    }
+
+    final timeLimit = quiz.timeLimit ?? 0;
 
     return Container(
       padding: const EdgeInsets.all(16),
@@ -46,12 +56,12 @@ class QuizDetailsHeaderView extends GetView<QuizDetailsHeaderController> {
           const Divider(),
           const SizedBox(height: 8),
           const Text('Judul Ujian', style: formLabel),
-          Text(data['title'] ?? 'N/A', style: bodyRegular),
+          Text(quiz.title, style: bodyRegular),
           const SizedBox(height: 12),
           const Text('Deskripsi Ujian', style: formLabel),
           Text(
-            data['description'] != null && data['description'].isNotEmpty
-                ? data['description']
+            quiz.description != null && quiz.description!.isNotEmpty
+                ? quiz.description!
                 : 'Tidak ada deskripsi.',
             style: bodyRegular,
           ),
@@ -62,13 +72,14 @@ class QuizDetailsHeaderView extends GetView<QuizDetailsHeaderController> {
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('Code : ${data['code'] ?? 'N/A'}', style: formLabel),
+                  Text('Code : ${quiz.code}', style: formLabel),
                   if (timeLimit > 0)
                     Text('Batas Waktu : $timeLimit Menit', style: cardSubtitle),
                 ],
               ),
+              // Use the quiz.isActive for the read-only switch state
               Switch(
-                value: isActive,
+                value: quiz.isActive,
                 onChanged: null, // Makes it read-only
                 activeColor: primaryColor,
               ),
@@ -125,20 +136,26 @@ class QuizDetailsHeaderView extends GetView<QuizDetailsHeaderController> {
             ),
           ),
           const SizedBox(height: 16),
+          // Use the dedicated timeLimitController
           FormFieldWithLabel(
-            label: 'Durasi Ujian',
+            label: 'Durasi Ujian (Menit)',
             child: TextFormField(
-              initialValue: controller.quizData.value['time_limit'].toString(),
+              controller: controller.timeLimitController,
               keyboardType: TextInputType.number,
-              onChanged: controller.updateTimeLimit,
+              decoration: const InputDecoration(hintText: '0 for no limit'),
             ),
           ),
           const SizedBox(height: 16),
-          SwitchRow(
-            title: 'Aktifkan Ujian',
-            subtitle: 'Murid bisa langsung masuk ketika kuis aktif',
-            value: controller.quizData.value['is_active'],
-            onChanged: controller.updateActiveStatus,
+          // Bind the switch to the controller's `isActiveForEditing` observable
+          Obx(
+            () => SwitchRow(
+              title: 'Aktifkan Ujian',
+              subtitle: 'Murid bisa langsung masuk ketika kuis aktif',
+              value: controller.isActiveForEditing.value,
+              onChanged: (newValue) {
+                controller.isActiveForEditing.value = newValue;
+              },
+            ),
           ),
         ],
       ),

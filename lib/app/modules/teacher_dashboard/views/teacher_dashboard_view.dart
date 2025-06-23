@@ -95,7 +95,7 @@ class TeacherDashboardView extends GetView<TeacherDashboardController> {
                       final quiz = controller.quizzes[index];
                       return QuizCard(
                         quiz: quiz,
-                        onTap: () => controller.viewQuizDetails(quiz['id']),
+                        onTap: () => controller.viewQuizDetails(quiz.id),
                       );
                     }, childCount: controller.quizzes.length),
                   ),

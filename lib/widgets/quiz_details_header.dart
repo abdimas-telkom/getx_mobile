@@ -41,10 +41,16 @@ class _QuizDetailsHeaderState extends State<QuizDetailsHeader> {
   }
 
   void _initializeControllers() {
-    _titleController = TextEditingController(text: widget.quizData['title'] ?? '');
-    _descriptionController = TextEditingController(text: widget.quizData['description'] ?? '');
-    _codeController = TextEditingController(text: widget.quizData['code'] ?? '');
-    
+    _titleController = TextEditingController(
+      text: widget.quizData['title'] ?? '',
+    );
+    _descriptionController = TextEditingController(
+      text: widget.quizData['description'] ?? '',
+    );
+    _codeController = TextEditingController(
+      text: widget.quizData['code'] ?? '',
+    );
+
     // Create a copy of the quizData for editing
     _editingData = Map<String, dynamic>.from(widget.quizData);
   }
@@ -65,7 +71,7 @@ class _QuizDetailsHeaderState extends State<QuizDetailsHeader> {
     _editingData['code'] = _codeController.text;
 
     await widget.onUpdate(_editingData);
-    
+
     setState(() {
       _isUpdating = false;
       _isEditing = false;
@@ -99,9 +105,7 @@ class _QuizDetailsHeaderState extends State<QuizDetailsHeader> {
                         ? const SizedBox(
                             width: 20,
                             height: 20,
-                            child: CircularProgressIndicator(
-                              strokeWidth: 2,
-                            ),
+                            child: CircularProgressIndicator(strokeWidth: 2),
                           )
                         : const Icon(Icons.save),
                     tooltip: 'Save Changes',
@@ -111,9 +115,7 @@ class _QuizDetailsHeaderState extends State<QuizDetailsHeader> {
             ),
             const Divider(),
             const SizedBox(height: 8),
-            _isEditing
-                ? _buildEditForm()
-                : _buildDisplayInfo(),
+            _isEditing ? _buildEditForm() : _buildDisplayInfo(),
           ],
         ),
       ),

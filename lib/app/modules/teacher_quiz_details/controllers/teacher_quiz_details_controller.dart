@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:ujian_sd_babakan_ciparay/app/modules/teacher_dashboard/controllers/teacher_dashboard_controller.dart';
 import 'package:ujian_sd_babakan_ciparay/app/routes/app_pages.dart';
+import 'package:ujian_sd_babakan_ciparay/models/quiz.dart';
 import 'package:ujian_sd_babakan_ciparay/models/quiz_attempt.dart';
 import 'package:ujian_sd_babakan_ciparay/services/teacher_quiz_service.dart';
 
@@ -10,8 +11,7 @@ class TeacherQuizDetailsController extends GetxController
   final int quizId;
   TeacherQuizDetailsController({required this.quizId});
 
-  var quizData = Rxn<Map<String, dynamic>>();
-  var questions = <dynamic>[].obs;
+  var quizData = Rxn<Quiz>();
   var attempts = <QuizAttempt>[].obs;
   var isLoadingInfo = false.obs;
   var isLoadingAttempts = false.obs;
@@ -53,9 +53,7 @@ class TeacherQuizDetailsController extends GetxController
   Future<void> loadQuizDetails() async {
     isLoadingInfo.value = true;
     try {
-      final data = await TeacherQuizService.getQuizDetails(quizId);
-      quizData.value = data as Map<String, dynamic>?;
-      questions.value = data['questions'] ?? [];
+      quizData.value = await TeacherQuizService.getQuizDetails(quizId);
     } catch (e) {
       Get.snackbar('Error', e.toString(), snackPosition: SnackPosition.BOTTOM);
     } finally {
@@ -69,6 +67,7 @@ class TeacherQuizDetailsController extends GetxController
       final list = await TeacherQuizService.getQuizAttempts(quizId);
       attempts.value = list;
     } catch (e) {
+      print("object");
       Get.snackbar('Error', e.toString(), snackPosition: SnackPosition.BOTTOM);
     } finally {
       isLoadingAttempts.value = false;
@@ -135,7 +134,7 @@ class TeacherQuizDetailsController extends GetxController
     try {
       await TeacherQuizService.toggleStatus(quizId);
       await loadQuizDetails();
-      final active = quizData.value?['is_active'] == true;
+      final active = quizData.value?.isActive == true;
       Get.snackbar(
         'Status Updated',
         active ? 'Activated' : 'Deactivated',
@@ -151,8 +150,8 @@ class TeacherQuizDetailsController extends GetxController
       Routes.TEACHER_ADD_QUESTIONS,
       arguments: {
         'quizId': quizId,
-        'quizTitle': quizData.value?['title'],
-        'quizCode': quizData.value?['code'],
+        'quizTitle': quizData.value?.title,
+        'quizCode': quizData.value?.code,
       },
     );
     if (res == true) loadQuizDetails();

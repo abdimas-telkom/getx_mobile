@@ -1,37 +1,40 @@
 import 'package:get/get.dart';
 import 'package:ujian_sd_babakan_ciparay/contracts/i_question_form_controller.dart';
+import 'package:ujian_sd_babakan_ciparay/models/answer_option.dart';
+import 'package:ujian_sd_babakan_ciparay/models/matching_pair.dart';
+import 'package:ujian_sd_babakan_ciparay/models/question.dart';
 import 'package:ujian_sd_babakan_ciparay/models/question_type.dart';
 import 'package:ujian_sd_babakan_ciparay/services/teacher_quiz_service.dart';
 
 class TeacherQuizEditController extends GetxController
     implements IQuestionFormController {
+  final Question? question;
   final int quizId;
-  final Map<String, dynamic>? questionData;
 
-  TeacherQuizEditController({required this.quizId, this.questionData});
+  TeacherQuizEditController({required this.quizId, this.question});
 
   // --- COMMON STATE ---
   final isSubmitting = false.obs;
   final questionText = ''.obs;
   final points = 10.obs;
-  final weight = 1.obs;
-  @override
-  late final Rx<QuestionType> selectedQuestionType; // Initialized in onInit
 
-  // --- STATE FOR EACH QUESTION TYPE ---
   @override
-  final mcAnswers = <Map<String, dynamic>>[].obs;
+  late final Rx<QuestionType> selectedQuestionType;
+
+  // --- STRONGLY-TYPED STATE ---
+  @override
+  final mcAnswers = <AnswerOption>[].obs;
   @override
   final tfCorrectAnswer = true.obs;
   @override
-  final weightedAnswers = <Map<String, dynamic>>[].obs;
+  final weightedAnswers = <AnswerOption>[].obs;
   @override
-  final matchingPairs = <Map<String, dynamic>>[].obs;
+  final matchingPairs = <MatchingPair>[].obs;
   @override
-  final distractorAnswers = <Map<String, dynamic>>[].obs;
+  final distractorAnswers = <AnswerOption>[].obs;
 
-  bool get isNew => questionData == null;
-  int? get questionId => isNew ? null : questionData!['id'];
+  bool get isNew => question == null;
+  int? get questionId => question?.id;
 
   @override
   void onInit() {
@@ -39,80 +42,44 @@ class TeacherQuizEditController extends GetxController
     _initializeForm();
   }
 
-  /// Populates the form based on existing questionData or sets defaults for a new question.
   void _initializeForm() {
     if (isNew) {
-      // --- DEFAULT STATE FOR A NEW QUESTION ---
       selectedQuestionType = QuestionType.multipleChoiceSingle.obs;
       mcAnswers.assignAll([
-        {'answer_text': '', 'is_correct': true},
-        {'answer_text': '', 'is_correct': false},
+        AnswerOption(answerText: '', isCorrect: true),
+        AnswerOption(answerText: '', isCorrect: false),
       ]);
       return;
     }
 
-    // --- POPULATE STATE FROM EXISTING QUESTION DATA ---
-    questionText.value = questionData!['question_text'] ?? '';
-    points.value = questionData!['points'] ?? 10;
-    selectedQuestionType = QuestionTypeExtension.fromString(
-      questionData!['question_type'],
-    ).obs;
+    final q = question!;
+    questionText.value = q.questionText;
+    points.value = q.points;
+    selectedQuestionType = q.questionType.obs;
 
-    switch (selectedQuestionType.value) {
+    switch (q.questionType) {
       case QuestionType.multipleChoiceSingle:
       case QuestionType.multipleChoiceMultiple:
-        final answersList = List<Map<String, dynamic>>.from(
-          questionData!['answers'] ?? [],
-        );
-        mcAnswers.assignAll(answersList);
+        mcAnswers.assignAll(q.answers);
         break;
-
       case QuestionType.trueFalse:
-        final answersList = List<Map<String, dynamic>>.from(
-          questionData!['answers'] ?? [],
-        );
-        final trueAnswer = answersList.firstWhere(
-          (a) => a['answer_text'] == 'True',
-          orElse: () => {'is_correct': true},
-        );
-        tfCorrectAnswer.value = trueAnswer['is_correct'];
+        tfCorrectAnswer.value = q.correctAnswer ?? true;
         break;
-
       case QuestionType.weightedOptions:
-        final answersList = List<Map<String, dynamic>>.from(
-          questionData!['answers'] ?? [],
-        );
-        weightedAnswers.assignAll(
-          answersList.map((a) {
-            return {
-              'id': a['id'],
-              'answer_text': a['answer_text'],
-              'points': ((a['points']) * 100).round(),
-            };
-          }).toList(),
-        );
+        weightedAnswers.assignAll(q.answers);
         break;
-
       case QuestionType.matching:
-        final pairsList = List<Map<String, dynamic>>.from(
-          questionData!['matching_pairs'] ?? [],
-        );
-        final distractorsList = List<Map<String, dynamic>>.from(
-          questionData!['distractor_answers'] ?? [],
-        );
-        matchingPairs.assignAll(pairsList);
-        distractorAnswers.assignAll(
-          distractorsList
-              .map((d) => {'answer_text': d['answer_text']})
-              .toList(),
-        );
+        matchingPairs.assignAll(q.matchingPairs);
+        distractorAnswers.assignAll(q.answers);
         break;
     }
   }
 
   // --- UI HELPER METHODS ---
   @override
-  void addMcOption() => mcAnswers.add({'answer_text': '', 'is_correct': false});
+  void addMcOption() =>
+      mcAnswers.add(AnswerOption(answerText: '', isCorrect: false));
+
   @override
   void removeMcOption(int index) {
     if (mcAnswers.length > 2) mcAnswers.removeAt(index);
@@ -121,22 +88,33 @@ class TeacherQuizEditController extends GetxController
   @override
   void setCorrectMcAnswer(int index) {
     for (var i = 0; i < mcAnswers.length; i++) {
-      mcAnswers[i] = {...mcAnswers[i], 'is_correct': i == index};
+      final currentAnswer = mcAnswers[i];
+      // *** FIX: Recreate the object to preserve its ID and other data. ***
+      mcAnswers[i] = AnswerOption(
+        id: currentAnswer.id,
+        answerText: currentAnswer.answerText,
+        isCorrect: i == index,
+      );
     }
-    mcAnswers.refresh();
   }
 
   @override
   void toggleCorrectMcAnswer(int index, bool value) {
     if (index < mcAnswers.length) {
-      mcAnswers[index] = {...mcAnswers[index], 'is_correct': value};
-      mcAnswers.refresh();
+      final currentAnswer = mcAnswers[index];
+      // *** FIX: Recreate the object to preserve its ID and other data. ***
+      mcAnswers[index] = AnswerOption(
+        id: currentAnswer.id,
+        answerText: currentAnswer.answerText,
+        isCorrect: value,
+      );
     }
   }
 
   @override
   void addWeightedOption() =>
-      weightedAnswers.add({'answer_text': '', 'points': 0});
+      weightedAnswers.add(AnswerOption(answerText: '', points: 0));
+
   @override
   void removeWeightedOption(int index) {
     if (weightedAnswers.length > 2) weightedAnswers.removeAt(index);
@@ -144,12 +122,14 @@ class TeacherQuizEditController extends GetxController
 
   @override
   void addMatchingPair() =>
-      matchingPairs.add({'prompt': '', 'correct_answer': ''});
+      matchingPairs.add(MatchingPair(prompt: '', correctAnswer: ''));
+
   @override
   void removeMatchingPair(int index) => matchingPairs.removeAt(index);
 
   @override
-  void addDistractor() => distractorAnswers.add({'answer_text': ''});
+  void addDistractor() => distractorAnswers.add(AnswerOption(answerText: ''));
+
   @override
   void removeDistractor(int index) => distractorAnswers.removeAt(index);
 
@@ -159,49 +139,26 @@ class TeacherQuizEditController extends GetxController
     final Map<String, dynamic> payload = {
       'question_text': questionText.value,
       'points': points.value,
-      'weight': weight.value,
       'question_type': selectedQuestionType.value.value,
     };
 
     switch (selectedQuestionType.value) {
       case QuestionType.multipleChoiceSingle:
       case QuestionType.multipleChoiceMultiple:
-        payload['answers'] = mcAnswers
-            .map(
-              (a) => {
-                if (a.containsKey('id')) 'id': a['id'],
-                'answer_text': a['answer_text'],
-                'is_correct': a['is_correct'],
-              },
-            )
-            .toList();
+        payload['answers'] = mcAnswers.map((a) => a.toJson()).toList();
         break;
       case QuestionType.trueFalse:
         payload['correct_answer'] = tfCorrectAnswer.value;
         break;
       case QuestionType.weightedOptions:
-        payload['answers'] = weightedAnswers
-            .map(
-              (a) => {
-                if (a.containsKey('id')) 'id': a['id'],
-                'answer_text': a['answer_text'],
-                'points': a['points'],
-              },
-            )
-            .toList();
+        payload['answers'] = weightedAnswers.map((a) => a.toJson()).toList();
         break;
       case QuestionType.matching:
         payload['matching_pairs'] = matchingPairs
-            .map(
-              (p) => {
-                if (p.containsKey('id')) 'id': p['id'],
-                'prompt': p['prompt'],
-                'correct_answer': p['correct_answer'],
-              },
-            )
+            .map((p) => p.toJson())
             .toList();
         payload['distractor_answers'] = distractorAnswers
-            .map((d) => d['answer_text'])
+            .map((d) => d.answerText)
             .toList();
         break;
     }
@@ -219,4 +176,7 @@ class TeacherQuizEditController extends GetxController
       isSubmitting.value = false;
     }
   }
+
+  @override
+  dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
 }
