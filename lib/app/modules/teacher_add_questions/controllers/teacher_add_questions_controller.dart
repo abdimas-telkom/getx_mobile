@@ -128,10 +128,9 @@ class TeacherAddQuestionsController extends GetxController
   @override
   void removeDistractor(int index) => distractorAnswers.removeAt(index);
 
-  /// Validates form data, builds the payload, and saves the question.
   Future<void> saveQuestion() async {
     if (questionText.value.trim().isEmpty) {
-      Get.snackbar('Validation Error', 'Question text cannot be empty.');
+      Get.snackbar('Terjadi Kesalahan', 'Kolom pertanyaan tidak boleh kosong.');
       return;
     }
 
@@ -147,8 +146,8 @@ class TeacherAddQuestionsController extends GetxController
       case QuestionType.multipleChoiceMultiple:
         if (mcAnswers.any((a) => a.answerText.trim().isEmpty)) {
           Get.snackbar(
-            'Validation Error',
-            'All multiple choice options must be filled.',
+            'Terjadi Kesalahan',
+            'Semua opsi pilihan ganda harus diisi.',
           );
           return;
         }
@@ -159,10 +158,7 @@ class TeacherAddQuestionsController extends GetxController
         break;
       case QuestionType.weightedOptions:
         if (weightedAnswers.any((a) => a.answerText.trim().isEmpty)) {
-          Get.snackbar(
-            'Validation Error',
-            'All weighted options must be filled.',
-          );
+          Get.snackbar('Terjadi Kesalahan', 'Semua opsi berbobot harus diisi.');
           return;
         }
         payload['answers'] = weightedAnswers.map((a) => a.toJson()).toList();
@@ -172,8 +168,8 @@ class TeacherAddQuestionsController extends GetxController
           (p) => p.prompt.trim().isEmpty || p.correctAnswer.trim().isEmpty,
         )) {
           Get.snackbar(
-            'Validation Error',
-            'All prompts and answers for matching pairs must be filled.',
+            'Terjadi Kesalahan',
+            'Semua prompt dan jawaban untuk pasangan yang cocok harus diisi.',
           );
           return;
         }
@@ -192,16 +188,16 @@ class TeacherAddQuestionsController extends GetxController
       await TeacherQuizService.addQuestion(quizId, payload);
       questionCount.value++;
       Get.snackbar(
-        'Success',
-        'Question #${questionCount.value} has been added.',
+        'Berhasil!',
+        'Pertanyaan #${questionCount.value} telah ditambahkan.',
         backgroundColor: Colors.green,
         colorText: Colors.white,
       );
       resetForm();
     } catch (e) {
       Get.snackbar(
-        'API Error',
-        'Failed to save question: ${e.toString()}',
+        'Terjadi Kesalahan',
+        'Gagal menyimpan pertanyaan: ${e.toString()}',
         backgroundColor: Colors.red,
         colorText: Colors.white,
       );
@@ -214,7 +210,10 @@ class TeacherAddQuestionsController extends GetxController
 
   Future<void> finishQuiz() async {
     if (questionCount.value == 0) {
-      Get.snackbar('No Questions', 'Please add at least one question.');
+      Get.snackbar(
+        'Tidak ada Pertanyaan',
+        'Silakan tambahkan setidaknya satu pertanyaan.',
+      );
       return;
     }
     Get.back(result: true);

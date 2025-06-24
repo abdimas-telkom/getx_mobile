@@ -35,7 +35,7 @@ class StudentResultController extends GetxController {
         results.value = await TeacherQuizService.getResults(attemptId);
       } else {
         Get.snackbar(
-          'Error',
+          'Terjadi Kesalahan',
           e.toString(),
           snackPosition: SnackPosition.BOTTOM,
         );

@@ -59,7 +59,10 @@ class StudentQuizController extends GetxController {
       questions.assignAll(await StudentQuizService.getQuestions(quizId));
       await _loadState();
     } catch (e) {
-      Get.snackbar('Error', 'Tidak dapat memuat kuis: ${e.toString()}');
+      Get.snackbar(
+        'Terjadi Kesalahan',
+        'Tidak dapat memuat Ujian: ${e.toString()}',
+      );
       // If loading fails, establish a new deadline to start fresh.
       if (initialTimeLimit > 0) {
         deadline = DateTime.now().add(Duration(minutes: initialTimeLimit));
@@ -279,7 +282,10 @@ class StudentQuizController extends GetxController {
         arguments: {'attemptId': res['attempt_id'], 'isGuru': false},
       );
     } catch (e) {
-      Get.snackbar('Error', 'Gagal mengirim ujian: ${e.toString()}');
+      Get.snackbar(
+        'Terjadi Kesalahan',
+        'Gagal mengirim ujian: ${e.toString()}',
+      );
       _startTimer();
     } finally {
       isSubmitting.value = false;

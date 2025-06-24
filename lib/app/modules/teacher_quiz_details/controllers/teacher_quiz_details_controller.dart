@@ -1,5 +1,9 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:open_file/open_file.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:ujian_sd_babakan_ciparay/app/modules/teacher_dashboard/controllers/teacher_dashboard_controller.dart';
 import 'package:ujian_sd_babakan_ciparay/app/routes/app_pages.dart';
 import 'package:ujian_sd_babakan_ciparay/models/quiz.dart';
@@ -16,6 +20,7 @@ class TeacherQuizDetailsController extends GetxController
   var isLoadingInfo = false.obs;
   var isLoadingAttempts = false.obs;
   var isDeleting = false.obs;
+  final isExporting = false.obs;
   var currentTab = 0.obs;
   late TabController tabController;
 
@@ -55,7 +60,11 @@ class TeacherQuizDetailsController extends GetxController
     try {
       quizData.value = await TeacherQuizService.getQuizDetails(quizId);
     } catch (e) {
-      Get.snackbar('Error', e.toString(), snackPosition: SnackPosition.BOTTOM);
+      Get.snackbar(
+        'Terjadi Kesalahan',
+        e.toString(),
+        snackPosition: SnackPosition.BOTTOM,
+      );
     } finally {
       isLoadingInfo.value = false;
     }
@@ -67,8 +76,11 @@ class TeacherQuizDetailsController extends GetxController
       final list = await TeacherQuizService.getQuizAttempts(quizId);
       attempts.value = list;
     } catch (e) {
-      print("object");
-      Get.snackbar('Error', e.toString(), snackPosition: SnackPosition.BOTTOM);
+      Get.snackbar(
+        'Terjadi Kesalahan',
+        e.toString(),
+        snackPosition: SnackPosition.BOTTOM,
+      );
     } finally {
       isLoadingAttempts.value = false;
     }
@@ -79,16 +91,16 @@ class TeacherQuizDetailsController extends GetxController
       await TeacherQuizService.updateQuiz(quizId, updatedData);
 
       Get.snackbar(
-        'Success',
-        'Quiz updated successfully',
+        'Sukses',
+        'Ujian berhasil diperbarui',
         snackPosition: SnackPosition.BOTTOM,
       );
 
       await loadQuizDetails();
     } catch (e) {
       Get.snackbar(
-        'Error',
-        'Error updating quiz: ${e.toString()}',
+        'Terjadi Kesalahan',
+        'Gagal memperbarui ujian: ${e.toString()}',
         snackPosition: SnackPosition.BOTTOM,
       );
     }
@@ -119,12 +131,16 @@ class TeacherQuizDetailsController extends GetxController
       await TeacherQuizService.deleteQuiz(quizId);
       Get.back(result: true);
       Get.snackbar(
-        'Success',
-        'Quiz deleted',
+        'Sukses',
+        'Ujian berhasil dihapus',
         snackPosition: SnackPosition.BOTTOM,
       );
     } catch (e) {
-      Get.snackbar('Error', e.toString(), snackPosition: SnackPosition.BOTTOM);
+      Get.snackbar(
+        'Terjadi Kesalahan',
+        e.toString(),
+        snackPosition: SnackPosition.BOTTOM,
+      );
     } finally {
       isDeleting.value = false;
     }
@@ -136,12 +152,16 @@ class TeacherQuizDetailsController extends GetxController
       await loadQuizDetails();
       final active = quizData.value?.isActive == true;
       Get.snackbar(
-        'Status Updated',
-        active ? 'Activated' : 'Deactivated',
+        'Status Diperbarui',
+        active ? 'Diaktifkan' : 'Dinonaktifkan',
         snackPosition: SnackPosition.BOTTOM,
       );
     } catch (e) {
-      Get.snackbar('Error', e.toString(), snackPosition: SnackPosition.BOTTOM);
+      Get.snackbar(
+        'Terjadi Kesalahan',
+        e.toString(),
+        snackPosition: SnackPosition.BOTTOM,
+      );
     }
   }
 
@@ -155,5 +175,40 @@ class TeacherQuizDetailsController extends GetxController
       },
     );
     if (res == true) loadQuizDetails();
+  }
+
+  Future<void> exportAttempts() async {
+    if (isExporting.value) return;
+    isExporting.value = true;
+    try {
+      final pdfBytes = await TeacherQuizService.exportAttemptsToPdf(quizId);
+
+      final directory = await getApplicationDocumentsDirectory();
+
+      final quizTitleSlug =
+          quizData.value?.title.replaceAll(' ', '_') ?? 'quiz';
+      final fileName =
+          'Ringkasan_${quizTitleSlug}_${DateTime.now().millisecondsSinceEpoch}.pdf';
+      final filePath = '${directory.path}/$fileName';
+
+      final file = File(filePath);
+      await file.writeAsBytes(pdfBytes);
+
+      Get.snackbar(
+        'Sukses',
+        'PDF berhasil diunduh.',
+        snackPosition: SnackPosition.BOTTOM,
+      );
+
+      await OpenFile.open(filePath);
+    } catch (e) {
+      Get.snackbar(
+        'Terjadi Kesalahan',
+        'Gagal mengekspor PDF: ${e.toString()}',
+        snackPosition: SnackPosition.BOTTOM,
+      );
+    } finally {
+      isExporting.value = false;
+    }
   }
 }

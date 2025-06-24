@@ -1,4 +1,5 @@
 import 'package:get/get.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:ujian_sd_babakan_ciparay/app/routes/app_pages.dart';
 import 'package:ujian_sd_babakan_ciparay/models/quiz.dart';
 import 'package:ujian_sd_babakan_ciparay/services/auth_service.dart';
@@ -13,6 +14,7 @@ class TeacherDashboardController extends GetxController {
   void onInit() {
     super.onInit();
     loadQuizzes();
+    _loadUserName();
   }
 
   @override
@@ -25,12 +27,21 @@ class TeacherDashboardController extends GetxController {
     super.onClose();
   }
 
+  Future<void> _loadUserName() async {
+    final prefs = await SharedPreferences.getInstance();
+    teacherName.value = prefs.getString(AuthService.nameKey) ?? 'Siswa';
+  }
+
   Future<void> loadQuizzes() async {
     isLoading.value = true;
     try {
       quizzes.assignAll(await TeacherQuizService.getQuizzes());
     } catch (e) {
-      Get.snackbar('Error', e.toString(), snackPosition: SnackPosition.BOTTOM);
+      Get.snackbar(
+        'Terjadi Kesalahan',
+        e.toString(),
+        snackPosition: SnackPosition.BOTTOM,
+      );
     } finally {
       isLoading.value = false;
     }
@@ -41,7 +52,11 @@ class TeacherDashboardController extends GetxController {
       await AuthService.logout();
       Get.offAllNamed(Routes.AUTH);
     } catch (e) {
-      Get.snackbar('Error', e.toString(), snackPosition: SnackPosition.BOTTOM);
+      Get.snackbar(
+        'Terjadi Kesalahan',
+        e.toString(),
+        snackPosition: SnackPosition.BOTTOM,
+      );
     }
   }
 

@@ -24,9 +24,32 @@ class QuizAttemptListView extends GetView<TeacherQuizDetailsController> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   const Text('Hasil Percobaan', style: headingDisplay),
-                  IconButton(
-                    onPressed: controller.loadAttempts,
-                    icon: const Icon(Icons.refresh),
+                  Row(
+                    children: [
+                      Obx(
+                        () => controller.isExporting.value
+                            ? const Padding(
+                                padding: EdgeInsets.all(12.0),
+                                child: SizedBox(
+                                  height: 24,
+                                  width: 24,
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2.5,
+                                  ),
+                                ),
+                              )
+                            : IconButton(
+                                onPressed: controller.exportAttempts,
+                                icon: const Icon(Icons.picture_as_pdf_outlined),
+                                tooltip: 'Export to PDF',
+                              ),
+                      ),
+                      IconButton(
+                        onPressed: controller.loadAttempts,
+                        icon: const Icon(Icons.refresh),
+                        tooltip: 'Refresh List',
+                      ),
+                    ],
                   ),
                 ],
               ),

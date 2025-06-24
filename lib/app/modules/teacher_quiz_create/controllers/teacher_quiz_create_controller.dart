@@ -32,15 +32,15 @@ class TeacherQuizCreateController extends GetxController {
   Future<void> submit() async {
     if (title.value.trim().isEmpty) {
       Get.snackbar(
-        'Validation',
-        'Please enter a title',
+        'Terjadi Kesalahan',
+        'Tolong isi judul',
         snackPosition: SnackPosition.BOTTOM,
       );
       return;
     }
     if (timeLimit.value != null && timeLimit.value! < 10) {
       Get.snackbar(
-        'Validation',
+        'Terjadi Kesalahan',
         'Durasi ujian minimal 10 menit',
         snackPosition: SnackPosition.BOTTOM,
       );
@@ -78,14 +78,14 @@ class TeacherQuizCreateController extends GetxController {
         try {
           await TeacherQuizService.deleteQuiz(quizId);
           Get.snackbar(
-            'Canceled',
-            'Quiz canceled: no questions were added.',
+            'Dibatalkan',
+            'Ujian dibatalkan: tidak ada pertanyaan yang ditambahkan.',
             snackPosition: SnackPosition.BOTTOM,
           );
         } catch (e) {
           Get.snackbar(
-            'Error',
-            'Error deleting empty quiz: ${e.toString()}',
+            'Terjadi Kesalahan',
+            'Gagal menghapus ujian kosong: ${e.toString()}',
             snackPosition: SnackPosition.BOTTOM,
           );
         }
@@ -95,14 +95,18 @@ class TeacherQuizCreateController extends GetxController {
 
       // Success
       Get.snackbar(
-        'Success',
-        'Quiz created successfully!',
+        'Berhasil!',
+        'Ujian berhasil dibuat!',
         snackPosition: SnackPosition.BOTTOM,
       );
       // Go back, signaling success
       Get.back(result: true);
     } catch (e) {
-      Get.snackbar('Error', e.toString(), snackPosition: SnackPosition.BOTTOM);
+      Get.snackbar(
+        'Terjadi Kesalahan',
+        e.toString(),
+        snackPosition: SnackPosition.BOTTOM,
+      );
     } finally {
       isLoading.value = false;
     }

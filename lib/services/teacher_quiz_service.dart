@@ -1,5 +1,7 @@
+import 'package:dio/dio.dart';
 import 'package:ujian_sd_babakan_ciparay/models/quiz.dart';
 import 'package:ujian_sd_babakan_ciparay/models/quiz_attempt.dart';
+import 'dart:typed_data';
 
 import 'api_client.dart';
 
@@ -114,5 +116,13 @@ class TeacherQuizService {
   static Future<Map<String, dynamic>> getResults(int attemptId) async {
     final resp = await ApiClient.instance.get('/teacher/attempts/$attemptId');
     return resp.data;
+  }
+
+  static Future<Uint8List> exportAttemptsToPdf(int quizId) async {
+    final response = await ApiClient.instance.get(
+      '/teacher/quizzes/$quizId/export-attempts-pdf',
+      options: Options(responseType: ResponseType.bytes),
+    );
+    return response.data;
   }
 }

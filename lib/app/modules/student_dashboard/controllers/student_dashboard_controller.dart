@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:ujian_sd_babakan_ciparay/app/routes/app_pages.dart';
 import 'package:ujian_sd_babakan_ciparay/services/auth_service.dart';
 import 'package:ujian_sd_babakan_ciparay/services/student_quiz_service.dart';
@@ -9,11 +10,12 @@ class StudentDashboardController extends GetxController {
   final codeController = TextEditingController();
   final isLoading = false.obs;
   final errorMessage = ''.obs;
-  final studentName = 'Alvan'.obs;
+  final studentName = 'Murid'.obs;
 
   @override
   void onInit() {
     super.onInit();
+    _loadUserName();
   }
 
   @override
@@ -25,6 +27,11 @@ class StudentDashboardController extends GetxController {
   void onClose() {
     codeController.dispose();
     super.onClose();
+  }
+
+  Future<void> _loadUserName() async {
+    final prefs = await SharedPreferences.getInstance();
+    studentName.value = prefs.getString(AuthService.nameKey) ?? 'Siswa';
   }
 
   Future<void> joinQuiz() async {

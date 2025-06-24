@@ -72,7 +72,7 @@ class QuestionNavigationDrawer extends StatelessWidget {
                                   child: Text('${index + 1}', style: cardTitle),
                                 ),
                               ),
-                              // Conditionally show the indicator line
+                              // TODO: fix container pas udah dijawab
                               if (isAnswered)
                                 Container(
                                   height: 3.0,

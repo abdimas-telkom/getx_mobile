@@ -171,7 +171,10 @@ class TeacherQuizEditController extends GetxController
       }
       Get.back(result: true);
     } catch (e) {
-      Get.snackbar('Error', 'Failed to save question: ${e.toString()}');
+      Get.snackbar(
+        'Terjadi Kesalahan',
+        'Gagal menyimpan pertanyaan: ${e.toString()}',
+      );
     } finally {
       isSubmitting.value = false;
     }

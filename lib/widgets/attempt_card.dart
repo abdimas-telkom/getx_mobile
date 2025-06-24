@@ -30,7 +30,10 @@ Widget AttemptCard(QuizAttempt attempt) {
           arguments: {'attemptId': attempt.id, 'isGuru': true},
         );
       } catch (e) {
-        Get.snackbar('Error', 'Failed to submit quiz: ${e.toString()}');
+        Get.snackbar(
+          'Terjadi Kesalahan',
+          'Gagal mengirim kuis: ${e.toString()}',
+        );
       }
     },
     child: Container(

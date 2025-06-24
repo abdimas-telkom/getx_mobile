@@ -58,11 +58,11 @@ class AuthController extends GetxController {
 
   Future<void> handleAuth() async {
     if (emailController.text.isEmpty || passwordController.text.isEmpty) {
-      Get.snackbar('Error', 'Please fill all fields');
+      Get.snackbar('Terjadi Kesalahan', 'Tolong isi email dan password');
       return;
     }
     if (!isLogin.value && nameController.text.isEmpty) {
-      Get.snackbar('Error', 'Please enter your name');
+      Get.snackbar('Terjadi Kesalahan', 'Tolong isi nama anda');
       return;
     }
     isLoading.value = true;
@@ -82,11 +82,13 @@ class AuthController extends GetxController {
           selectedRole.value,
         );
       }
+
       final prefs = await SharedPreferences.getInstance();
+      await prefs.setString(AuthService.nameKey, response['user']['name']);
       await prefs.setString(AuthService.roleKey, response['user']['role']);
       _navigateBasedOnRole();
     } catch (e) {
-      Get.snackbar('Error', e.toString());
+      Get.snackbar('Terjadi Kesalahan', e.toString());
     } finally {
       isLoading.value = false;
     }

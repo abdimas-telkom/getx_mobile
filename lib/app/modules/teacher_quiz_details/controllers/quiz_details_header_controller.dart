@@ -82,7 +82,10 @@ class QuizDetailsHeaderController extends GetxController {
       await _parentController.updateQuizDetails(updatedData);
       isEditing.value = false;
     } catch (e) {
-      Get.snackbar('Error', 'Could not save changes. Please try again.');
+      Get.snackbar(
+        'Terjadi Kesalahan',
+        'Gagal menyimpan perubahan. Silakan coba lagi.',
+      );
     } finally {
       isUpdating.value = false;
     }

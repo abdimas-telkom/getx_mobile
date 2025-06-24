@@ -4,6 +4,7 @@ import 'api_client.dart';
 class AuthService {
   static const String _tokenKey = 'auth_token';
   static const String _roleKey = 'user_role';
+  static const String nameKey = 'user_name';
 
   static const String roleKey = _roleKey;
 
