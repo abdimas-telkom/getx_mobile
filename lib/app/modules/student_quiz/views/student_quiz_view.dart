@@ -222,15 +222,11 @@ class StudentQuizView extends GetView<StudentQuizController> {
     });
   }
 
-  // --- THIS METHOD IS NOW CORRECTED ---
   Widget _buildMatchingUI(Question question) {
     final questionId = question.id;
 
-    // *** FIX: Get prompts directly from question.prompts ***
     final prompts = question.prompts;
 
-    // *** FIX: Get answer options directly from question.distractorAnswers ***
-    // The `distractorAnswers` list now holds AnswerOption objects.
     final answerOptions = question.distractorAnswers
         .map((opt) => opt.answerText)
         .toList();
@@ -242,11 +238,9 @@ class StudentQuizView extends GetView<StudentQuizController> {
           );
 
       return ListView.builder(
-        // The itemCount is now based on the length of the prompts list.
         itemCount: prompts.length,
         itemBuilder: (context, index) {
           final prompt = prompts[index];
-          // Find the currently selected answer for this prompt
           final currentSelection = selectedPairs.firstWhere(
             (pair) => pair['prompt'] == prompt,
             orElse: () => {'selected_answer': ''},

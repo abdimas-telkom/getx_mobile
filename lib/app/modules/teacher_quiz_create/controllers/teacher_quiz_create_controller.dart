@@ -93,13 +93,11 @@ class TeacherQuizCreateController extends GetxController {
         return;
       }
 
-      // Success
       Get.snackbar(
         'Berhasil!',
         'Ujian berhasil dibuat!',
         snackPosition: SnackPosition.BOTTOM,
       );
-      // Go back, signaling success
       Get.back(result: true);
     } catch (e) {
       Get.snackbar(

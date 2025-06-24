@@ -14,7 +14,6 @@ class TeacherQuizEditView extends GetView<TeacherQuizEditController> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        // REMOVED Obx wrapper here, as controller.isNew is not an observable.
         title: Text(
           controller.isNew ? 'Tambah Soal Baru' : 'Edit Soal',
           style: const TextStyle(fontWeight: FontWeight.bold),
@@ -24,7 +23,6 @@ class TeacherQuizEditView extends GetView<TeacherQuizEditController> {
         elevation: 0,
         centerTitle: true,
       ),
-      // This Obx is CORRECT because it observes a reactive variable (.isSubmitting.value)
       body: Obx(
         () => controller.isSubmitting.value
             ? const Center(child: CircularProgressIndicator())
@@ -39,7 +37,6 @@ class TeacherQuizEditView extends GetView<TeacherQuizEditController> {
                     const SizedBox(height: 40),
                     ElevatedButton(
                       onPressed: controller.save,
-                      // REMOVED Obx wrapper here as well.
                       child: Text(
                         controller.isNew ? 'Simpan Soal' : 'Simpan Perubahan',
                       ),
@@ -51,7 +48,6 @@ class TeacherQuizEditView extends GetView<TeacherQuizEditController> {
     );
   }
 
-  /// Builds the top section for Question Text, Points, and Type.
   Widget _buildCommonDetailsSection(BuildContext context) {
     final questionTypeNames = {
       QuestionType.multipleChoiceSingle: 'Pilihan Ganda Satu Jawaban',
@@ -86,7 +82,6 @@ class TeacherQuizEditView extends GetView<TeacherQuizEditController> {
         const SizedBox(height: 16),
         FormFieldWithLabel(
           label: 'Tipe Soal',
-          // This Obx is CORRECT because it observes a reactive variable (.selectedQuestionType.value)
           child: Obx(
             () => DropdownButtonFormField<QuestionType>(
               value: controller.selectedQuestionType.value,
@@ -112,9 +107,7 @@ class TeacherQuizEditView extends GetView<TeacherQuizEditController> {
     );
   }
 
-  /// Builds the section for answer options, which changes based on question type.
   Widget _buildAnswerOptionsSection(BuildContext context) {
-    // This Obx is CORRECT
     return Obx(() {
       final type = controller.selectedQuestionType.value;
       final showAddButton =

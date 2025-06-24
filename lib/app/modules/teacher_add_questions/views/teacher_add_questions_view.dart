@@ -150,7 +150,6 @@ class TeacherAddQuestionsView extends GetView<TeacherAddQuestionsController> {
   Widget _buildAnswerOptionsSection() {
     return Obx(() {
       final type = controller.selectedQuestionType.value;
-      // Determine if the add button should be shown
       final showAddButton =
           type == QuestionType.multipleChoiceSingle ||
           type == QuestionType.multipleChoiceMultiple ||
@@ -185,7 +184,6 @@ class TeacherAddQuestionsView extends GetView<TeacherAddQuestionsController> {
             ],
           ),
           const SizedBox(height: 8),
-          // This Obx will rebuild only the answer form when the type changes
           Obx(() {
             switch (controller.selectedQuestionType.value) {
               case QuestionType.multipleChoiceSingle:

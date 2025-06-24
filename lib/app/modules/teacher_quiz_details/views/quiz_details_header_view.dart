@@ -12,7 +12,6 @@ class QuizDetailsHeaderView extends GetView<QuizDetailsHeaderController> {
 
   @override
   Widget build(BuildContext context) {
-    // We need the parent controller to display read-only info
     Get.find<TeacherQuizDetailsController>();
     return Obx(
       () => controller.isEditing.value
@@ -22,11 +21,9 @@ class QuizDetailsHeaderView extends GetView<QuizDetailsHeaderController> {
   }
 
   Widget _buildReadOnlyInfoCard() {
-    // The source of truth for read-only data is the parent controller
     final parentController = Get.find<TeacherQuizDetailsController>();
     final quiz = parentController.quizData.value;
 
-    // Show a loader or empty state if quiz data isn't available yet
     if (quiz == null) {
       return const Center(child: CircularProgressIndicator());
     }
@@ -77,10 +74,9 @@ class QuizDetailsHeaderView extends GetView<QuizDetailsHeaderController> {
                     Text('Batas Waktu : $timeLimit Menit', style: cardSubtitle),
                 ],
               ),
-              // Use the quiz.isActive for the read-only switch state
               Switch(
                 value: quiz.isActive,
-                onChanged: null, // Makes it read-only
+                onChanged: null,
                 activeColor: primaryColor,
               ),
             ],
@@ -136,7 +132,6 @@ class QuizDetailsHeaderView extends GetView<QuizDetailsHeaderController> {
             ),
           ),
           const SizedBox(height: 16),
-          // Use the dedicated timeLimitController
           FormFieldWithLabel(
             label: 'Durasi Ujian (Menit)',
             child: TextFormField(
@@ -146,7 +141,6 @@ class QuizDetailsHeaderView extends GetView<QuizDetailsHeaderController> {
             ),
           ),
           const SizedBox(height: 16),
-          // Bind the switch to the controller's `isActiveForEditing` observable
           Obx(
             () => SwitchRow(
               title: 'Aktifkan Ujian',

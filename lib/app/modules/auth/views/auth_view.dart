@@ -54,7 +54,6 @@ class AuthView extends GetView<AuthController> {
                 ),
                 const SizedBox(height: 16),
 
-                // --- MODIFIED: Password TextField with visibility toggle ---
                 Obx(
                   () => TextField(
                     controller: controller.passwordController,

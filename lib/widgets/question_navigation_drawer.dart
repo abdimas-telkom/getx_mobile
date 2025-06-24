@@ -39,7 +39,7 @@ class QuestionNavigationDrawer extends StatelessWidget {
                       gridDelegate:
                           const SliverGridDelegateWithFixedCrossAxisCount(
                             crossAxisCount: 5,
-                            childAspectRatio: 1.2,
+                            childAspectRatio: 0.9,
                             crossAxisSpacing: 12,
                             mainAxisSpacing: 12,
                           ),
@@ -54,32 +54,38 @@ class QuestionNavigationDrawer extends StatelessWidget {
                             controller.jumpToQuestion(index);
                             Get.back();
                           },
-                          // *** FIX: Use a Column to stack the indicator below the box ***
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
+                          child: Stack(
                             children: [
-                              Expanded(
-                                child: Container(
-                                  alignment: Alignment.center,
-                                  decoration: BoxDecoration(
-                                    color: Colors.white,
-                                    borderRadius: BorderRadius.circular(8),
-                                    // Use a simple, uniform border for all states
-                                    border: Border.all(
-                                      color: textMutedColor.withOpacity(0.5),
-                                    ),
+                              Container(
+                                decoration: BoxDecoration(
+                                  border: Border.all(
+                                    color: isAnswered
+                                        ? primaryColor
+                                        : Colors.grey,
+                                    width: 1,
                                   ),
-                                  child: Text('${index + 1}', style: cardTitle),
+                                  borderRadius: BorderRadius.circular(8),
                                 ),
                               ),
-                              // TODO: fix container pas udah dijawab
+
+                              Center(
+                                child: Text('${index + 1}', style: cardTitle),
+                              ),
+
                               if (isAnswered)
-                                Container(
-                                  height: 3.0,
-                                  margin: const EdgeInsets.only(top: 4.0),
-                                  decoration: BoxDecoration(
-                                    color: primaryColor,
-                                    borderRadius: BorderRadius.circular(2.0),
+                                Positioned(
+                                  left: 0,
+                                  right: 0,
+                                  bottom: 0,
+                                  child: Container(
+                                    height: 5.0,
+                                    decoration: BoxDecoration(
+                                      color: primaryColor,
+                                      borderRadius: const BorderRadius.only(
+                                        bottomLeft: Radius.circular(8.0),
+                                        bottomRight: Radius.circular(8.0),
+                                      ),
+                                    ),
                                   ),
                                 ),
                             ],

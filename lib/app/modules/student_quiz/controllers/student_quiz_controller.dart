@@ -1,5 +1,3 @@
-// lib/app/modules/student_quiz/controllers/student_quiz_controller.dart
-
 import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/material.dart';
@@ -15,22 +13,18 @@ class StudentQuizController extends GetxController {
   late final int initialTimeLimit;
   StudentQuizController({required this.quizId});
 
-  // --- STATE ---
   var isLoading = true.obs;
   var isSubmitting = false.obs;
   var questions = <Question>[].obs;
   var currentIndex = 0.obs;
   var userAnswers = <int, dynamic>{}.obs;
 
-  // --- TIMER STATE ---
   late Timer _timer;
   var remainingSeconds = 0.obs;
   var timerString = ''.obs;
 
-  // *** NEW: The authoritative time when the quiz ends. ***
   DateTime? deadline;
 
-  // --- PERSISTENCE KEY ---
   String get _persistenceKey => 'quiz_state_$quizId';
 
   Question get currentQuestion => questions[currentIndex.value];
@@ -49,7 +43,6 @@ class StudentQuizController extends GetxController {
   @override
   void onClose() {
     _timer.cancel();
-    // No need to save state on close, as the deadline is fixed.
     super.onClose();
   }
 
@@ -63,21 +56,16 @@ class StudentQuizController extends GetxController {
         'Terjadi Kesalahan',
         'Tidak dapat memuat Ujian: ${e.toString()}',
       );
-      // If loading fails, establish a new deadline to start fresh.
       if (initialTimeLimit > 0) {
         deadline = DateTime.now().add(Duration(minutes: initialTimeLimit));
-        await _saveState(); // Save the new deadline
+        await _saveState();
       }
     } finally {
-      // Start the timer which will now calculate time against the deadline.
       _startTimer();
       isLoading.value = false;
     }
   }
 
-  // --- PERSISTENCE METHODS ---
-
-  /// Saves the deadline and user answers.
   Future<void> _saveState() async {
     try {
       final prefs = await SharedPreferences.getInstance();
@@ -85,7 +73,6 @@ class StudentQuizController extends GetxController {
         return MapEntry(key.toString(), value);
       });
       final state = {
-        // *** MODIFIED: Store the deadline, not the remaining seconds. ***
         'deadline': deadline?.toIso8601String(),
         'answers': encodableAnswers,
       };
@@ -95,7 +82,6 @@ class StudentQuizController extends GetxController {
     }
   }
 
-  /// Loads the deadline and answers. If no deadline exists, it creates one.
   Future<void> _loadState() async {
     final prefs = await SharedPreferences.getInstance();
     final savedStateString = prefs.getString(_persistenceKey);
@@ -118,10 +104,8 @@ class StudentQuizController extends GetxController {
       }
     }
 
-    // *** NEW: If no deadline was loaded (e.g., first time taking quiz), create one.
     if (deadline == null && initialTimeLimit > 0) {
       deadline = DateTime.now().add(Duration(minutes: initialTimeLimit));
-      // Save the state immediately so the new deadline is persisted.
       await _saveState();
     }
   }
@@ -131,12 +115,8 @@ class StudentQuizController extends GetxController {
     await prefs.remove(_persistenceKey);
   }
 
-  // --- TIMER LOGIC ---
-
-  /// The timer now calculates remaining time against the fixed deadline.
   void _startTimer() {
     _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
-      // If deadline hasn't been set, do nothing.
       if (deadline == null) {
         remainingSeconds.value = 0;
         _updateTimerString();
@@ -144,17 +124,14 @@ class StudentQuizController extends GetxController {
         return;
       }
 
-      // Calculate the difference between now and the deadline.
       final remaining = deadline!.difference(DateTime.now());
 
       if (remaining.inSeconds > 0) {
         remainingSeconds.value = remaining.inSeconds;
       } else {
-        // *** NEW: Time has run out! ***
         remainingSeconds.value = 0;
-        timer.cancel(); // Stop the timer
+        timer.cancel();
 
-        // Notify the user and force submit the quiz.
         if (!Get.isSnackbarOpen) {
           Get.snackbar(
             "Waktu Habis",
@@ -176,7 +153,6 @@ class StudentQuizController extends GetxController {
         '${minutes.toString().padLeft(2, '0')}:${seconds.toString().padLeft(2, '0')}';
   }
 
-  // --- ANSWER SELECTION METHODS (No changes needed) ---
   void selectSingleAnswer(int questionId, int answerId) {
     userAnswers[questionId] = answerId;
     _saveState();
@@ -216,7 +192,6 @@ class StudentQuizController extends GetxController {
   }
 
   // --- NAVIGATION ---
-  /// Jumps the view to a specific question index.
   void jumpToQuestion(int index) {
     if (index >= 0 && index < questions.length) {
       currentIndex.value = index;
@@ -227,7 +202,6 @@ class StudentQuizController extends GetxController {
     if (currentIndex.value < questions.length - 1) {
       currentIndex.value++;
     } else {
-      // User-initiated submission at the end of the quiz.
       submit();
     }
   }
@@ -238,9 +212,7 @@ class StudentQuizController extends GetxController {
     }
   }
 
-  /// Submits the quiz. Can be forced by the timer even if incomplete.
   Future<void> submit({bool force = false}) async {
-    // *** MODIFIED: If not a forced submission, check for completion. ***
     if (!force && userAnswers.length != questions.length) {
       Get.snackbar(
         'Belum Selesai',
@@ -252,7 +224,6 @@ class StudentQuizController extends GetxController {
     isSubmitting.value = true;
     _timer.cancel();
 
-    // Payload construction remains the same
     final List<Map<String, dynamic>> finalPayload = [];
     for (var question in questions) {
       final questionId = question.id;

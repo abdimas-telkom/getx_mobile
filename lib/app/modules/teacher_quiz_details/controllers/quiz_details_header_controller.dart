@@ -4,18 +4,15 @@ import 'package:ujian_sd_babakan_ciparay/models/quiz.dart';
 import 'teacher_quiz_details_controller.dart';
 
 class QuizDetailsHeaderController extends GetxController {
-  // Observables for state management
   final isEditing = false.obs;
   final isUpdating = false.obs;
   final isActiveForEditing = false.obs;
 
-  // Text editing controllers for form fields
   late TextEditingController titleController;
   late TextEditingController descriptionController;
   late TextEditingController codeController;
   late TextEditingController timeLimitController;
 
-  // Reference to the parent controller holding the authoritative data
   late final TeacherQuizDetailsController _parentController;
 
   @override
@@ -23,16 +20,13 @@ class QuizDetailsHeaderController extends GetxController {
     super.onInit();
     _parentController = Get.find<TeacherQuizDetailsController>();
 
-    // Initialize all text controllers
     titleController = TextEditingController();
     descriptionController = TextEditingController();
     codeController = TextEditingController();
     timeLimitController = TextEditingController();
 
-    // Set initial values from the parent controller's quiz data
     _initializeFields(_parentController.quizData.value);
 
-    // Listen for changes in the parent's data and reset fields if not editing
     ever(_parentController.quizData, (Quiz? newQuizData) {
       if (!isEditing.value) {
         _initializeFields(newQuizData);
@@ -40,7 +34,6 @@ class QuizDetailsHeaderController extends GetxController {
     });
   }
 
-  /// Helper to initialize or reset all editable fields from the Quiz model.
   void _initializeFields(Quiz? quiz) {
     if (quiz == null) return;
     titleController.text = quiz.title;
@@ -59,7 +52,6 @@ class QuizDetailsHeaderController extends GetxController {
     super.onClose();
   }
 
-  /// Toggles editing mode. If cancelled, resets fields to original values.
   void toggleEdit() {
     isEditing.value = !isEditing.value;
     if (!isEditing.value) {
@@ -67,7 +59,6 @@ class QuizDetailsHeaderController extends GetxController {
     }
   }
 
-  /// Saves changes by calling the parent controller's update method.
   Future<void> saveChanges() async {
     isUpdating.value = true;
     final updatedData = {

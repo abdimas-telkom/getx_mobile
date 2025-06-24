@@ -225,20 +225,20 @@ class TeacherAddQuestionsController extends GetxController
     if (questionCount.value > 0 || hasUnsavedChanges) {
       final result = await Get.dialog<bool>(
         AlertDialog(
-          title: const Text('Are you sure?'),
+          title: const Text('Apakah Anda Yakin?'),
           content: Text(
             questionCount.value > 0
-                ? 'You have added ${questionCount.value} questions. If you go back, the quiz will be saved with these questions.'
-                : 'You have unsaved changes. If you go back, they will be lost.',
+                ? 'Anda telah menambahkan ${questionCount.value} pertanyaan. Jika Anda kembali, kuis akan disimpan dengan pertanyaan ini.'
+                : 'Anda memiliki perubahan yang belum disimpan. Jika Anda kembali, perubahan tersebut akan hilang.',
           ),
           actions: [
             TextButton(
               onPressed: () => Get.back(result: false),
-              child: const Text('CONTINUE EDITING'),
+              child: const Text('LANJUTKAN MENGEDIT'),
             ),
             TextButton(
               onPressed: () => Get.back(result: true),
-              child: const Text('CONFIRM & GO BACK'),
+              child: const Text('KONFIRMASI & KEMBALI'),
             ),
           ],
         ),

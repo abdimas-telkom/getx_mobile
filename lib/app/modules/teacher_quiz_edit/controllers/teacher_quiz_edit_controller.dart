@@ -13,7 +13,6 @@ class TeacherQuizEditController extends GetxController
 
   TeacherQuizEditController({required this.quizId, this.question});
 
-  // --- COMMON STATE ---
   final isSubmitting = false.obs;
   final questionText = ''.obs;
   final points = 10.obs;
@@ -21,7 +20,6 @@ class TeacherQuizEditController extends GetxController
   @override
   late final Rx<QuestionType> selectedQuestionType;
 
-  // --- STRONGLY-TYPED STATE ---
   @override
   final mcAnswers = <AnswerOption>[].obs;
   @override
@@ -75,7 +73,6 @@ class TeacherQuizEditController extends GetxController
     }
   }
 
-  // --- UI HELPER METHODS ---
   @override
   void addMcOption() =>
       mcAnswers.add(AnswerOption(answerText: '', isCorrect: false));
@@ -89,7 +86,6 @@ class TeacherQuizEditController extends GetxController
   void setCorrectMcAnswer(int index) {
     for (var i = 0; i < mcAnswers.length; i++) {
       final currentAnswer = mcAnswers[i];
-      // *** FIX: Recreate the object to preserve its ID and other data. ***
       mcAnswers[i] = AnswerOption(
         id: currentAnswer.id,
         answerText: currentAnswer.answerText,
@@ -102,7 +98,6 @@ class TeacherQuizEditController extends GetxController
   void toggleCorrectMcAnswer(int index, bool value) {
     if (index < mcAnswers.length) {
       final currentAnswer = mcAnswers[index];
-      // *** FIX: Recreate the object to preserve its ID and other data. ***
       mcAnswers[index] = AnswerOption(
         id: currentAnswer.id,
         answerText: currentAnswer.answerText,

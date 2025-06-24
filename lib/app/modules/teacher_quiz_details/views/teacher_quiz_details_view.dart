@@ -52,9 +52,7 @@ class TeacherQuizDetailsView extends GetView<TeacherQuizDetailsController> {
         ),
       ),
       floatingActionButton: Obx(
-        () =>
-            controller.currentTab.value ==
-                1 // Only show on 'Soal' tab
+        () => controller.currentTab.value == 1
             ? FloatingActionButton(
                 onPressed: controller.addQuestion,
                 backgroundColor: primaryColor,
@@ -70,23 +68,15 @@ class TeacherQuizDetailsView extends GetView<TeacherQuizDetailsController> {
         if (controller.quizData.value == null) {
           return const Center(child: Text('Gagal memuat detail ujian'));
         }
-        // The fix is applied inside the TabBarView's children list
         return Padding(
           padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 16),
           child: TabBarView(
             controller: controller.tabController,
             children: const [
-              // --- FIX IS HERE ---
-              // Wrap the first tab's content in an Align widget.
-              // This allows it to take its natural height ("hug content")
-              // instead of being stretched by the TabBarView.
               Align(
                 alignment: Alignment.topCenter,
                 child: QuizDetailsHeaderView(),
               ),
-
-              // The other list-based tabs should NOT be wrapped,
-              // as they need to fill the space to be scrollable.
               QuestionListView(),
               QuizAttemptListView(),
             ],

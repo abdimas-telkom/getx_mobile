@@ -24,7 +24,6 @@ class TeacherQuizDetailsController extends GetxController
   var currentTab = 0.obs;
   late TabController tabController;
 
-  // --- COMPUTED PROPERTIES FOR STATS ---
   int get totalAttempts => attempts.length;
   int get completedAttempts =>
       attempts.where((a) => a.status == 'finished').length;
