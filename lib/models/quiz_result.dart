@@ -3,7 +3,7 @@ import 'package:ujian_sd_babakan_ciparay/models/user.dart';
 
 class QuizResult {
   final String quizTitle;
-  final User student;
+  final User? student;
   final double score;
   final int totalPoints;
   final double percentage;
@@ -12,7 +12,7 @@ class QuizResult {
 
   QuizResult({
     required this.quizTitle,
-    required this.student,
+    this.student,
     required this.score,
     required this.totalPoints,
     required this.percentage,
@@ -27,7 +27,7 @@ class QuizResult {
 
     return QuizResult(
       quizTitle: json['quiz_title'] ?? 'No Title',
-      student: User.fromJson(json['student'] ?? {}),
+      student: json['student'] != null ? User.fromJson(json['student']) : null,
       score: (json['score'] as num?)?.toDouble() ?? 0.0,
       totalPoints: json['total_points'] ?? 0,
       percentage: (json['percentage'] as num?)?.toDouble() ?? 0.0,

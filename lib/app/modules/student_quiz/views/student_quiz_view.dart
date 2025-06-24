@@ -139,10 +139,14 @@ class StudentQuizView extends GetView<StudentQuizController> {
                 ),
                 clipBehavior: Clip.antiAlias,
                 child: IconButton(
-                  icon: const Icon(
-                    Icons.arrow_right_alt_rounded,
-                    color: primaryColor,
-                    size: 20,
+                  icon: Transform(
+                    alignment: Alignment.center,
+                    transform: Matrix4.rotationY(3.1416),
+                    child: const Icon(
+                      Icons.arrow_right_alt_rounded,
+                      color: primaryColor,
+                      size: 20,
+                    ),
                   ),
                   onPressed: () {
                     scaffoldKey.currentState?.openEndDrawer();

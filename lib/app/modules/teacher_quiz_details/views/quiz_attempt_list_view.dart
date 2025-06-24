@@ -27,22 +27,26 @@ class QuizAttemptListView extends GetView<TeacherQuizDetailsController> {
                   Row(
                     children: [
                       Obx(
-                        () => controller.isExporting.value
-                            ? const Padding(
-                                padding: EdgeInsets.all(12.0),
-                                child: SizedBox(
-                                  height: 24,
-                                  width: 24,
-                                  child: CircularProgressIndicator(
-                                    strokeWidth: 2.5,
-                                  ),
-                                ),
-                              )
-                            : IconButton(
-                                onPressed: controller.exportAttempts,
-                                icon: const Icon(Icons.picture_as_pdf_outlined),
-                                tooltip: 'Export to PDF',
-                              ),
+                        () => (controller.totalAttempts > 0)
+                            ? (controller.isExporting.value
+                                  ? const Padding(
+                                      padding: EdgeInsets.all(12.0),
+                                      child: SizedBox(
+                                        height: 24,
+                                        width: 24,
+                                        child: CircularProgressIndicator(
+                                          strokeWidth: 2.5,
+                                        ),
+                                      ),
+                                    )
+                                  : IconButton(
+                                      onPressed: controller.exportAttempts,
+                                      icon: const Icon(
+                                        Icons.picture_as_pdf_outlined,
+                                      ),
+                                      tooltip: 'Export to PDF',
+                                    ))
+                            : const SizedBox.shrink(),
                       ),
                       IconButton(
                         onPressed: controller.loadAttempts,

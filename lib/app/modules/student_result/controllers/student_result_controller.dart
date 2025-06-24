@@ -20,6 +20,7 @@ class StudentResultController extends GetxController {
 
   Future<void> loadResults() async {
     isLoading.value = true;
+    print(attemptId);
     try {
       results.value = await StudentQuizService.getResults(attemptId);
     } catch (e) {
@@ -34,6 +35,8 @@ class StudentResultController extends GetxController {
           );
         }
       } else {
+        print("Error loading results: $e");
+        print(results.value);
         Get.snackbar(
           'Terjadi Kesalahan',
           e.toString(),

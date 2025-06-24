@@ -202,7 +202,7 @@ class StudentQuizController extends GetxController {
     if (currentIndex.value < questions.length - 1) {
       currentIndex.value++;
     } else {
-      submit();
+      submit(force: true);
     }
   }
 
@@ -228,6 +228,9 @@ class StudentQuizController extends GetxController {
     for (var question in questions) {
       final questionId = question.id;
       final answerData = userAnswers[questionId];
+      if (answerData == null) {
+        continue;
+      }
       final Map<String, dynamic> answerPayload = {'question_id': questionId};
       switch (question.questionType) {
         case QuestionType.multipleChoiceSingle:
