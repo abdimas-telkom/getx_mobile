@@ -48,7 +48,7 @@ class QuestionListController extends GetxController {
           ),
           TextButton(
             onPressed: () => Get.back(result: true),
-            child: const Text('HAPUS', style: TextStyle(color: Colors.red)),
+            child: const Text('Hapus', style: TextStyle(color: Colors.red)),
           ),
         ],
       ),

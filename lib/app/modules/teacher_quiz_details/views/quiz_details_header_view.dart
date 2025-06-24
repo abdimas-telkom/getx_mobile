@@ -69,7 +69,7 @@ class QuizDetailsHeaderView extends GetView<QuizDetailsHeaderController> {
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('Code : ${quiz.code}', style: formLabel),
+                  Text('Kode : ${quiz.code}', style: formLabel),
                   if (timeLimit > 0)
                     Text('Batas Waktu : $timeLimit Menit', style: cardSubtitle),
                 ],

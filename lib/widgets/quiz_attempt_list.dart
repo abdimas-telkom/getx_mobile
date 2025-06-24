@@ -31,18 +31,17 @@ class QuizAttemptsList extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    'Quiz Attempts',
+                    'Ujian Percobaan',
                     style: Theme.of(context).textTheme.titleLarge,
                   ),
                   IconButton(
                     icon: const Icon(Icons.refresh),
                     onPressed: onRefresh,
-                    tooltip: 'Refresh Attempts',
+                    tooltip: 'Refresh Percobaan',
                   ),
                 ],
               ),
               const SizedBox(height: 8),
-              // Use the refactored stats widget
               AttemptsStats(attempts),
               const SizedBox(height: 16),
               if (isLoading && attempts.isEmpty)
@@ -52,13 +51,12 @@ class QuizAttemptsList extends StatelessWidget {
                   child: Padding(
                     padding: EdgeInsets.all(24.0),
                     child: Text(
-                      'No attempts yet.',
+                      'Belum ada percobaan.',
                       style: TextStyle(color: Colors.grey),
                     ),
                   ),
                 )
               else
-                // Build the list using the refactored card widget
                 ListView.builder(
                   shrinkWrap: true,
                   physics: const NeverScrollableScrollPhysics(),

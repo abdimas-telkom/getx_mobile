@@ -43,7 +43,7 @@ class TeacherAddQuestionsView extends GetView<TeacherAddQuestionsController> {
           actions: [
             TextButton(
               onPressed: controller.finishQuiz,
-              child: const Text('SELESAI'),
+              child: const Text('Selesai'),
             ),
           ],
         ),
@@ -141,7 +141,6 @@ class TeacherAddQuestionsView extends GetView<TeacherAddQuestionsController> {
         ),
         const SizedBox(height: 24),
 
-        // --- DYNAMIC ANSWER OPTIONS ---
         _buildAnswerOptionsSection(),
       ],
     );

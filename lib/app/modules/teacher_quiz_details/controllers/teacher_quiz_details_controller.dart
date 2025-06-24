@@ -108,18 +108,18 @@ class TeacherQuizDetailsController extends GetxController
   Future<void> deleteQuiz() async {
     final confirm = await Get.dialog<bool>(
       AlertDialog(
-        title: const Text('Delete Quiz'),
+        title: const Text('Hapus Ujian'),
         content: const Text(
-          'Are you sure you want to delete this quiz? This action cannot be undone.',
+          'Apakah Anda yakin ingin menghapus ujian ini? Aksi ini tidak dapat dibatalkan.',
         ),
         actions: [
           TextButton(
             onPressed: () => Get.back(result: false),
-            child: const Text('CANCEL'),
+            child: const Text('Batal'),
           ),
           TextButton(
             onPressed: () => Get.back(result: true),
-            child: const Text('DELETE', style: TextStyle(color: Colors.red)),
+            child: const Text('Hapus', style: TextStyle(color: Colors.red)),
           ),
         ],
       ),

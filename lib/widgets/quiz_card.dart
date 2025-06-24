@@ -16,19 +16,17 @@ Widget QuizCard({required Quiz quiz, required VoidCallback onTap}) {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          // Left side: Title and Code
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(quiz.title, style: cardTitle),
                 const SizedBox(height: 4),
-                Text('Code: ${quiz.code}', style: cardSubtitle),
+                Text('Kode: ${quiz.code}', style: cardSubtitle),
               ],
             ),
           ),
           const SizedBox(width: 16),
-          // Right side: Question Count and Icon
           Row(
             children: [
               Text('${quiz.questionsCount} Pertanyaan', style: cardSubtitle),

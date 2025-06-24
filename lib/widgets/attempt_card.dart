@@ -59,7 +59,6 @@ Widget AttemptCard(QuizAttempt attempt) {
                         vertical: 4,
                       ),
                       decoration: BoxDecoration(
-                        // The color logic now works correctly with the new ratio
                         color: score >= 70
                             ? Colors.green[100]
                             : Colors.red[100],
@@ -92,7 +91,7 @@ Widget AttemptCard(QuizAttempt attempt) {
                   borderRadius: BorderRadius.circular(20),
                 ),
                 child: Text(
-                  isFinished ? 'Selesai' : 'In Progress',
+                  isFinished ? 'Selesai' : 'Dalam Proses',
                   style: const TextStyle(color: whiteColor, fontSize: 12),
                 ),
               ),

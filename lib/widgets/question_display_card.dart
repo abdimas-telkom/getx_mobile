@@ -90,7 +90,7 @@ Widget QuestionDisplayCard(
               ),
               const SizedBox(width: 8),
               Text(
-                correct ? 'True' : 'False',
+                correct ? 'Benar' : 'Salah',
                 style: cardSubtitle.copyWith(
                   color: correct ? blackColor : textMutedColor,
                 ),

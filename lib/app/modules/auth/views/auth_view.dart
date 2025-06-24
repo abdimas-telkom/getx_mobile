@@ -106,7 +106,7 @@ class AuthView extends GetView<AuthController> {
                             actions: [
                               TextButton(
                                 onPressed: () => Get.back(result: false),
-                                child: const Text('CANCEL'),
+                                child: const Text('Kembali'),
                               ),
                             ],
                           ),

@@ -234,11 +234,11 @@ class TeacherAddQuestionsController extends GetxController
           actions: [
             TextButton(
               onPressed: () => Get.back(result: false),
-              child: const Text('LANJUTKAN MENGEDIT'),
+              child: const Text('Lanjutkan Mengedit'),
             ),
             TextButton(
               onPressed: () => Get.back(result: true),
-              child: const Text('KONFIRMASI & KEMBALI'),
+              child: const Text('Konfirmasi & Kembali'),
             ),
           ],
         ),

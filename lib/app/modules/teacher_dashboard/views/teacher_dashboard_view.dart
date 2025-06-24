@@ -24,7 +24,6 @@ class TeacherDashboardView extends GetView<TeacherDashboardController> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      // Header: School Info
                       Row(
                         children: [
                           Image.asset('assets/images/logo.png', height: 40),
@@ -36,14 +35,13 @@ class TeacherDashboardView extends GetView<TeacherDashboardController> {
                         ],
                       ),
                       const SizedBox(height: 24),
-                      // Header: Greeting and Logout
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
                           Obx(
                             () => Text(
-                              'Hallo, ${controller.teacherName.value}!',
+                              'Selamat Datang, ${controller.teacherName.value}!',
                               style: textTheme.displaySmall,
                             ),
                           ),
@@ -61,7 +59,6 @@ class TeacherDashboardView extends GetView<TeacherDashboardController> {
                   ),
                 ),
               ),
-              // Main Content: Loading, Empty, or List
               Obx(() {
                 if (controller.isLoading.value && controller.quizzes.isEmpty) {
                   return const SliverFillRemaining(
@@ -87,7 +84,6 @@ class TeacherDashboardView extends GetView<TeacherDashboardController> {
                     ),
                   );
                 }
-                // Display list of quizzes
                 return SliverPadding(
                   padding: const EdgeInsets.symmetric(horizontal: 24.0),
                   sliver: SliverList(

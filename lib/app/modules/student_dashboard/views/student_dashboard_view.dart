@@ -8,28 +8,21 @@ class StudentDashboardView extends GetView<StudentDashboardController> {
   const StudentDashboardView({super.key});
   @override
   Widget build(BuildContext context) {
-    // Access theme for specific text styles
     final textTheme = Theme.of(context).textTheme;
 
     return Scaffold(
-      // No AppBar as per the new design
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(24.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const SizedBox(height: 50), // Space from top
-              // Header Row with Logo and School Name
+              const SizedBox(height: 50),
               Row(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  Image.asset(
-                    'assets/images/logo.png', // Your logo path
-                    height: 40,
-                  ),
+                  Image.asset('assets/images/logo.png', height: 40),
                   const SizedBox(width: 12),
-                  // Using headingSection style from text_styles.dart via the theme
                   Text('SDN 227 Margahayu Utara', style: textTheme.titleMedium),
                   const Spacer(),
                   IconButton(
@@ -40,40 +33,31 @@ class StudentDashboardView extends GetView<StudentDashboardController> {
               ),
               const SizedBox(height: 32),
 
-              // Greeting Text, observing the studentName from the controller
               Obx(
                 () => Text(
-                  'Hallo, ${controller.studentName.value}!',
-                  // Using headingDisplay style from text_styles.dart via the theme
+                  'Selamat datang, ${controller.studentName.value}!',
                   style: textTheme.displaySmall,
                 ),
               ),
               const SizedBox(height: 8),
 
-              // Instruction Text
               const Text(
                 'Silakan masukan kode untuk mengakses soal kuis.',
-                // Using bodyRegular style from text_styles.dart via the theme
                 style: bodyRegular,
               ),
               const SizedBox(height: 24),
 
-              // Code Input Field
               TextField(
                 controller: controller.codeController,
                 textAlign: TextAlign.center,
-                // Using inputText style for the actual text entered
                 style: inputText.copyWith(fontSize: 18),
-                // Decoration is inherited from the theme, we just override the hint
                 decoration: const InputDecoration(
                   hintText: 'Kode',
-                  // Using inputLabel style for the hint, but centered
                   hintStyle: inputLabel,
                 ),
               ),
               const SizedBox(height: 8),
 
-              // Error Message Display
               Obx(() {
                 if (controller.errorMessage.isNotEmpty) {
                   return Padding(
@@ -91,7 +75,6 @@ class StudentDashboardView extends GetView<StudentDashboardController> {
               }),
               const SizedBox(height: 8),
 
-              // "Mulai" Button
               SizedBox(
                 width: double.infinity,
                 child: Obx(

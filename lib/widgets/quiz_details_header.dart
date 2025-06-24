@@ -90,13 +90,13 @@ class _QuizDetailsHeaderState extends State<QuizDetailsHeader> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  'Quiz Information',
+                  'Informasi Ujian',
                   style: Theme.of(context).textTheme.titleLarge,
                 ),
                 if (!_isEditing)
                   IconButton(
                     icon: const Icon(Icons.edit),
-                    tooltip: 'Edit Quiz',
+                    tooltip: 'Edit Ujian',
                     onPressed: () => setState(() => _isEditing = true),
                   )
                 else
@@ -108,7 +108,7 @@ class _QuizDetailsHeaderState extends State<QuizDetailsHeader> {
                             child: CircularProgressIndicator(strokeWidth: 2),
                           )
                         : const Icon(Icons.save),
-                    tooltip: 'Save Changes',
+                    tooltip: 'Simpan Perubahan',
                     onPressed: _isUpdating ? null : _updateQuizDetails,
                   ),
               ],
@@ -129,7 +129,7 @@ class _QuizDetailsHeaderState extends State<QuizDetailsHeader> {
         TextField(
           controller: _titleController,
           decoration: const InputDecoration(
-            labelText: 'Quiz Title',
+            labelText: 'Judul Ujian',
             border: OutlineInputBorder(),
           ),
         ),
@@ -137,7 +137,7 @@ class _QuizDetailsHeaderState extends State<QuizDetailsHeader> {
         TextField(
           controller: _descriptionController,
           decoration: const InputDecoration(
-            labelText: 'Description',
+            labelText: 'Deskripsi',
             border: OutlineInputBorder(),
           ),
           maxLines: 3,
@@ -146,9 +146,9 @@ class _QuizDetailsHeaderState extends State<QuizDetailsHeader> {
         TextField(
           controller: _codeController,
           decoration: const InputDecoration(
-            labelText: 'Quiz Code',
+            labelText: 'Kode Ujian',
             border: OutlineInputBorder(),
-            helperText: 'Leave blank to generate automatically',
+            helperText: 'Biarkan kosong untuk menghasilkan secara otomatis',
           ),
           maxLength: 8,
         ),
@@ -163,15 +163,15 @@ class _QuizDetailsHeaderState extends State<QuizDetailsHeader> {
                 });
               },
             ),
-            const Text('Active'),
+            const Text('Aktif'),
             const SizedBox(width: 16),
-            const Text('Time limit:'),
+            const Text('Batas Waktu:'),
             const SizedBox(width: 8),
             Expanded(
               child: TextFormField(
                 initialValue: '${_editingData['time_limit'] ?? 0}',
                 decoration: const InputDecoration(
-                  labelText: 'Minutes',
+                  labelText: 'Menit',
                   border: OutlineInputBorder(),
                 ),
                 keyboardType: TextInputType.number,
@@ -217,7 +217,7 @@ class _QuizDetailsHeaderState extends State<QuizDetailsHeader> {
                     : Colors.grey,
               ),
               label: Text(
-                widget.quizData['is_active'] == true ? 'Active' : 'Inactive',
+                widget.quizData['is_active'] == true ? 'Aktif' : 'Tidak Aktif',
                 style: TextStyle(
                   color: widget.quizData['is_active'] == true
                       ? Colors.green
@@ -236,7 +236,7 @@ class _QuizDetailsHeaderState extends State<QuizDetailsHeader> {
             widget.quizData['time_limit'] > 0) ...[
           const SizedBox(height: 8),
           Text(
-            'Time limit: ${widget.quizData['time_limit']} minutes',
+            'Batas Waktu: ${widget.quizData['time_limit']} menit',
             style: const TextStyle(fontStyle: FontStyle.italic),
           ),
         ],

@@ -23,7 +23,7 @@ Widget AttemptsStats(List<QuizAttempt> attempts) {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Statistics',
+            'Statistik Ujian',
             style: TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.bold,
@@ -34,11 +34,10 @@ Widget AttemptsStats(List<QuizAttempt> attempts) {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
-              StatItem(label: 'Total Attempts', value: '$total'),
-              StatItem(label: 'Completed', value: '$completed'),
-              // Display average score as points, not percentage
+              StatItem(label: 'Total Percobaan', value: '$total'),
+              StatItem(label: 'Selesai', value: '$completed'),
               StatItem(
-                label: 'Avg. Score',
+                label: 'Rata-rata Skor',
                 value: '${avgScore.toStringAsFixed(1)} pts',
               ),
             ],

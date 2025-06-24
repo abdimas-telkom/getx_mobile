@@ -40,7 +40,9 @@ class StudentQuizView extends GetView<StudentQuizController> {
           return const Center(child: CircularProgressIndicator());
         }
         if (controller.questions.isEmpty) {
-          return const Center(child: Text('No questions found for this quiz.'));
+          return const Center(
+            child: Text('Tidak ada pertanyaan di dalam ujian ini.'),
+          );
         }
 
         final question = controller.currentQuestion;
@@ -88,7 +90,10 @@ class StudentQuizView extends GetView<StudentQuizController> {
                                 Icons.arrow_back,
                                 color: primaryColor,
                               ),
-                              label: const Text('Previous', style: buttonText),
+                              label: const Text(
+                                'Sebelumnya',
+                                style: buttonText,
+                              ),
                             )
                           : const SizedBox.shrink(),
                       ElevatedButton.icon(
@@ -111,8 +116,8 @@ class StudentQuizView extends GetView<StudentQuizController> {
                         label: Text(
                           controller.currentIndex.value ==
                                   controller.questions.length - 1
-                              ? 'Submit'
-                              : 'Next',
+                              ? 'Selesai'
+                              : 'Selanjutnya',
                         ),
                       ),
                     ],

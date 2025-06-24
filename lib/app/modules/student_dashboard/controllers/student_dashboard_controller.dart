@@ -48,7 +48,7 @@ class StudentDashboardController extends GetxController {
         actions: [
           TextButton(
             onPressed: () => Get.back(result: false),
-            child: const Text('CANCEL'),
+            child: const Text('Kembali'),
           ),
           TextButton(
             onPressed: () async {
@@ -70,7 +70,7 @@ class StudentDashboardController extends GetxController {
                     : e.toString();
               }
             },
-            child: const Text('MASUK', style: TextStyle(color: primaryColor)),
+            child: const Text('Masuk', style: TextStyle(color: primaryColor)),
           ),
         ],
       ),
