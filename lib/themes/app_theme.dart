@@ -13,7 +13,19 @@ class AppTheme {
     primaryColor: primaryColor,
     scaffoldBackgroundColor: backgroundColor,
 
-    // Use colors from colors.dart
+    appBarTheme: AppBarTheme(
+      surfaceTintColor: whiteColor,
+      color: whiteColor,
+      iconTheme: const IconThemeData(color: blackColor),
+      titleTextStyle: headingDisplay,
+      centerTitle: true,
+    ),
+    textSelectionTheme: TextSelectionThemeData(
+      cursorColor: primaryColor,
+      selectionColor: primaryColor.withValues(alpha: 0.5),
+      selectionHandleColor: primaryColor,
+    ),
+
     colorScheme: const ColorScheme.light(
       primary: primaryColor,
       onPrimary: whiteColor,

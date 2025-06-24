@@ -13,12 +13,7 @@ class TeacherQuizDetailsView extends GetView<TeacherQuizDetailsController> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
-          'Detail Ujian',
-          style: TextStyle(fontWeight: FontWeight.bold),
-        ),
-        backgroundColor: whiteColor,
-        foregroundColor: blackColor,
+        title: const Text('Detail Ujian'),
         elevation: 0,
         centerTitle: true,
         actions: [

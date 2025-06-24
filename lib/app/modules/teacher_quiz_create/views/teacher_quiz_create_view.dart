@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
-import 'package:ujian_sd_babakan_ciparay/themes/colors.dart';
 import 'package:ujian_sd_babakan_ciparay/widgets/form_field_with_label.dart';
 import 'package:ujian_sd_babakan_ciparay/widgets/switch_row.dart';
 import '../controllers/teacher_quiz_create_controller.dart';
@@ -13,12 +12,7 @@ class TeacherQuizCreateView extends GetView<TeacherQuizCreateController> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
-          'Buat Ujian',
-          style: TextStyle(fontWeight: FontWeight.bold),
-        ),
-        backgroundColor: whiteColor,
-        foregroundColor: blackColor,
+        title: const Text('Buat Ujian'),
         elevation: 0,
         centerTitle: true,
       ),

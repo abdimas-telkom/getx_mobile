@@ -14,12 +14,7 @@ class TeacherQuizEditView extends GetView<TeacherQuizEditController> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(
-          controller.isNew ? 'Tambah Soal Baru' : 'Edit Soal',
-          style: const TextStyle(fontWeight: FontWeight.bold),
-        ),
-        backgroundColor: whiteColor,
-        foregroundColor: blackColor,
+        title: Text(controller.isNew ? 'Tambah Soal Baru' : 'Edit Soal'),
         elevation: 0,
         centerTitle: true,
       ),

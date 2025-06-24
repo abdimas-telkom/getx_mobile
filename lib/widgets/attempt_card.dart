@@ -87,7 +87,7 @@ Widget AttemptCard(QuizAttempt attempt) {
                   vertical: 4,
                 ),
                 decoration: BoxDecoration(
-                  color: statusColor.withOpacity(0.8),
+                  color: statusColor.withValues(alpha: 0.8),
                   borderRadius: BorderRadius.circular(20),
                 ),
                 child: Text(

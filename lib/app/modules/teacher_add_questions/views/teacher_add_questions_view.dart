@@ -32,12 +32,7 @@ class TeacherAddQuestionsView extends GetView<TeacherAddQuestionsController> {
       },
       child: Scaffold(
         appBar: AppBar(
-          title: const Text(
-            'Tambah Soal',
-            style: TextStyle(fontWeight: FontWeight.bold),
-          ),
-          backgroundColor: whiteColor,
-          foregroundColor: blackColor,
+          title: const Text('Tambah Soal'),
           elevation: 0,
           centerTitle: true,
           actions: [

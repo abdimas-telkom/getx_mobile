@@ -1,4 +1,5 @@
 import 'package:ujian_sd_babakan_ciparay/models/question.dart';
+import 'package:ujian_sd_babakan_ciparay/models/quiz_result.dart';
 import 'api_client.dart';
 
 class StudentQuizService {
@@ -33,9 +34,9 @@ class StudentQuizService {
     return resp.data;
   }
 
-  static Future<Map<String, dynamic>> getResults(int attemptId) async {
+  static Future<QuizResult> getResults(int attemptId) async {
     final resp = await ApiClient.instance.get('/student/attempts/$attemptId');
-    return resp.data;
+    return QuizResult.fromJson(resp.data);
   }
 
   static Future<List<dynamic>> getStudentAttempts() async {
