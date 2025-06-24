@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:ujian_sd_babakan_ciparay/app/routes/app_pages.dart';
 import 'package:ujian_sd_babakan_ciparay/themes/colors.dart';
 import '../controllers/teacher_quiz_details_controller.dart';
 import 'question_list_view.dart';
@@ -14,6 +15,10 @@ class TeacherQuizDetailsView extends GetView<TeacherQuizDetailsController> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Detail Ujian'),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () => Get.offAllNamed(Routes.TEACHER_DASHBOARD),
+        ),
         elevation: 0,
         centerTitle: true,
         actions: [

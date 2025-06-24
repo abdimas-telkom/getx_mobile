@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:ujian_sd_babakan_ciparay/models/answer_option.dart';
 import 'package:ujian_sd_babakan_ciparay/models/matching_pair.dart';
@@ -18,6 +19,13 @@ abstract class IQuestionFormController {
   abstract RxList<MatchingPair> matchingPairs;
 
   abstract RxList<AnswerOption> distractorAnswers;
+
+  abstract final List<TextEditingController> mcAnswerTextControllers;
+  abstract final List<TextEditingController> weightedAnswerTextControllers;
+  abstract final List<TextEditingController> weightedAnswerPointsControllers;
+  abstract final List<TextEditingController> matchingPromptControllers;
+  abstract final List<TextEditingController> matchingAnswerControllers;
+  abstract final List<TextEditingController> distractorTextControllers;
 
   // --- UI HELPER METHODS ---
   // These method signatures are also updated for type safety.

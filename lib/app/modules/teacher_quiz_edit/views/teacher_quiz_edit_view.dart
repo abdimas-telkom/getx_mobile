@@ -58,8 +58,8 @@ class TeacherQuizEditView extends GetView<TeacherQuizEditController> {
         FormFieldWithLabel(
           label: 'Pertanyaan',
           child: TextFormField(
-            initialValue: controller.questionText.value,
-            onChanged: (v) => controller.questionText.value = v,
+            initialValue: controller.questionTextController.text,
+            onChanged: (v) => controller.questionTextController.text = v,
             decoration: InputDecoration(hintText: 'Masukkan teks pertanyaan'),
             maxLines: 3,
           ),
@@ -68,8 +68,8 @@ class TeacherQuizEditView extends GetView<TeacherQuizEditController> {
         FormFieldWithLabel(
           label: 'Poin Soal',
           child: TextFormField(
-            initialValue: controller.points.value.toString(),
-            onChanged: (v) => controller.points.value = int.tryParse(v) ?? 10,
+            initialValue: controller.pointsController.text,
+            onChanged: (v) => controller.pointsController.text = v,
             decoration: InputDecoration(hintText: 'Masukkan Poin'),
             keyboardType: TextInputType.number,
           ),

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:ujian_sd_babakan_ciparay/app/routes/app_pages.dart';
 import 'package:ujian_sd_babakan_ciparay/contracts/i_question_form_controller.dart';
 import 'package:ujian_sd_babakan_ciparay/models/answer_option.dart';
 import 'package:ujian_sd_babakan_ciparay/models/matching_pair.dart';
@@ -18,18 +19,15 @@ class TeacherAddQuestionsController extends GetxController
     required this.quizCode,
   });
 
-  // --- STATE MANAGEMENT ---
   final isLoading = false.obs;
   final questionCount = 0.obs;
 
-  // Common state
-  final questionText = ''.obs;
-  final points = 10.obs;
+  final questionTextController = TextEditingController();
+  final pointsController = TextEditingController(text: '10');
 
   @override
   final selectedQuestionType = QuestionType.multipleChoiceSingle.obs;
 
-  // --- STRONGLY-TYPED STATE FOR EACH QUESTION TYPE ---
   @override
   final mcAnswers = <AnswerOption>[].obs;
   @override
@@ -42,47 +40,126 @@ class TeacherAddQuestionsController extends GetxController
   final distractorAnswers = <AnswerOption>[].obs;
 
   @override
+  final List<TextEditingController> mcAnswerTextControllers = [];
+  @override
+  final List<TextEditingController> weightedAnswerTextControllers = [];
+  @override
+  final List<TextEditingController> weightedAnswerPointsControllers = [];
+  @override
+  final List<TextEditingController> matchingPromptControllers = [];
+  @override
+  final List<TextEditingController> matchingAnswerControllers = [];
+  @override
+  final List<TextEditingController> distractorTextControllers = [];
+
+  @override
   void onInit() {
     super.onInit();
-    resetForm(); // Initialize the form for the default question type
+    resetForm();
   }
 
-  /// Resets the form fields to their default state for adding a new question.
-  void resetForm() {
-    questionText.value = '';
-    points.value = 10;
-    selectedQuestionType.value =
-        QuestionType.multipleChoiceSingle; // Reset type
+  @override
+  void onClose() {
+    questionTextController.dispose();
+    pointsController.dispose();
+    _clearAllControllers();
+    super.onClose();
+  }
 
+  void _clearAllControllers() {
+    for (var c in mcAnswerTextControllers) {
+      c.dispose();
+    }
+    mcAnswerTextControllers.clear();
+
+    for (var c in weightedAnswerTextControllers) {
+      c.dispose();
+    }
+    weightedAnswerTextControllers.clear();
+
+    for (var c in weightedAnswerPointsControllers) {
+      c.dispose();
+    }
+    weightedAnswerPointsControllers.clear();
+
+    for (var c in matchingPromptControllers) {
+      c.dispose();
+    }
+    matchingPromptControllers.clear();
+
+    for (var c in matchingAnswerControllers) {
+      c.dispose();
+    }
+    matchingAnswerControllers.clear();
+
+    for (var c in distractorTextControllers) {
+      c.dispose();
+    }
+    distractorTextControllers.clear();
+  }
+
+  void resetForm() {
+    questionTextController.clear();
+    pointsController.text = '10';
+    selectedQuestionType.value = QuestionType.multipleChoiceSingle;
+
+    _clearAllControllers();
     mcAnswers.assignAll([
       AnswerOption(answerText: '', isCorrect: true),
       AnswerOption(answerText: '', isCorrect: false),
     ]);
+    for (var answer in mcAnswers) {
+      mcAnswerTextControllers.add(
+        TextEditingController(text: answer.answerText),
+      );
+    }
+
     tfCorrectAnswer.value = true;
+
     weightedAnswers.assignAll([
       AnswerOption(answerText: '', points: 10),
       AnswerOption(answerText: '', points: 5),
     ]);
+    for (var answer in weightedAnswers) {
+      weightedAnswerTextControllers.add(
+        TextEditingController(text: answer.answerText),
+      );
+      weightedAnswerPointsControllers.add(
+        TextEditingController(text: answer.points?.toStringAsFixed(0) ?? '0'),
+      );
+    }
+
     matchingPairs.assignAll([
       MatchingPair(prompt: '', correctAnswer: ''),
       MatchingPair(prompt: '', correctAnswer: ''),
     ]);
+    for (var pair in matchingPairs) {
+      matchingPromptControllers.add(TextEditingController(text: pair.prompt));
+      matchingAnswerControllers.add(
+        TextEditingController(text: pair.correctAnswer),
+      );
+    }
+
     distractorAnswers.clear();
   }
 
-  /// Called when the user changes the question type from the UI dropdown.
   void onQuestionTypeChanged(QuestionType newType) {
     selectedQuestionType.value = newType;
   }
 
-  // --- UI HELPER METHODS ---
+  @override
+  void addMcOption() {
+    mcAnswers.add(AnswerOption(answerText: '', isCorrect: false));
+    mcAnswerTextControllers.add(TextEditingController());
+  }
 
   @override
-  void addMcOption() =>
-      mcAnswers.add(AnswerOption(answerText: '', isCorrect: false));
-  @override
   void removeMcOption(int index) {
-    if (mcAnswers.length > 2) mcAnswers.removeAt(index);
+    if (mcAnswers.length > 2) {
+      mcAnswers.removeAt(index);
+      mcAnswerTextControllers[index].dispose();
+      mcAnswerTextControllers.removeAt(index);
+    }
   }
 
   @override
@@ -110,85 +187,150 @@ class TeacherAddQuestionsController extends GetxController
   }
 
   @override
-  void addWeightedOption() =>
-      weightedAnswers.add(AnswerOption(answerText: '', points: 0));
-  @override
-  void removeWeightedOption(int index) {
-    if (weightedAnswers.length > 2) weightedAnswers.removeAt(index);
+  void addWeightedOption() {
+    weightedAnswers.add(AnswerOption(answerText: '', points: 0));
+    weightedAnswerTextControllers.add(TextEditingController());
+    weightedAnswerPointsControllers.add(TextEditingController(text: '0'));
   }
 
   @override
-  void addMatchingPair() =>
-      matchingPairs.add(MatchingPair(prompt: '', correctAnswer: ''));
-  @override
-  void removeMatchingPair(int index) => matchingPairs.removeAt(index);
+  void removeWeightedOption(int index) {
+    if (weightedAnswers.length > 2) {
+      weightedAnswers.removeAt(index);
+      weightedAnswerTextControllers[index].dispose();
+      weightedAnswerTextControllers.removeAt(index);
+      weightedAnswerPointsControllers[index].dispose();
+      weightedAnswerPointsControllers.removeAt(index);
+    }
+  }
 
   @override
-  void addDistractor() => distractorAnswers.add(AnswerOption(answerText: ''));
+  void addMatchingPair() {
+    matchingPairs.add(MatchingPair(prompt: '', correctAnswer: ''));
+    matchingPromptControllers.add(TextEditingController());
+    matchingAnswerControllers.add(TextEditingController());
+  }
+
   @override
-  void removeDistractor(int index) => distractorAnswers.removeAt(index);
+  void removeMatchingPair(int index) {
+    if (matchingPairs.length > 2) {
+      matchingPairs.removeAt(index);
+      matchingPromptControllers[index].dispose();
+      matchingPromptControllers.removeAt(index);
+      matchingAnswerControllers[index].dispose();
+      matchingAnswerControllers.removeAt(index);
+    }
+  }
+
+  @override
+  void addDistractor() {
+    distractorAnswers.add(AnswerOption(answerText: ''));
+    distractorTextControllers.add(TextEditingController());
+  }
+
+  @override
+  void removeDistractor(int index) {
+    distractorAnswers.removeAt(index);
+    distractorTextControllers[index].dispose();
+    distractorTextControllers.removeAt(index);
+  }
 
   Future<void> saveQuestion() async {
-    if (questionText.value.trim().isEmpty) {
-      Get.snackbar('Terjadi Kesalahan', 'Kolom pertanyaan tidak boleh kosong.');
+    final questionText = questionTextController.text.trim();
+    if (questionText.isEmpty) {
+      Get.snackbar('Kesalahan Validasi', 'Teks pertanyaan tidak boleh kosong.');
       return;
     }
 
-    // --- PAYLOAD CONSTRUCTION ---
-    final Map<String, dynamic> payload = {
-      'question_text': questionText.value,
-      'points': points.value,
+    final points = int.tryParse(pointsController.text) ?? 10;
+
+    isLoading.value = true;
+
+    Map<String, dynamic> payload = {
+      'question_text': questionText,
+      'points': points,
       'question_type': selectedQuestionType.value.value,
     };
 
     switch (selectedQuestionType.value) {
       case QuestionType.multipleChoiceSingle:
       case QuestionType.multipleChoiceMultiple:
-        if (mcAnswers.any((a) => a.answerText.trim().isEmpty)) {
-          Get.snackbar(
-            'Terjadi Kesalahan',
-            'Semua opsi pilihan ganda harus diisi.',
+        List<Map<String, dynamic>> answersPayload = [];
+        for (int i = 0; i < mcAnswers.length; i++) {
+          final text = mcAnswerTextControllers[i].text.trim();
+          if (text.isEmpty) {
+            Get.snackbar(
+              'Kesalahan Validasi',
+              'Semua pilihan ganda harus diisi.',
+            );
+            isLoading.value = false;
+            return;
+          }
+          answersPayload.add(
+            AnswerOption(
+              answerText: text,
+              isCorrect: mcAnswers[i].isCorrect,
+            ).toJson(),
           );
-          return;
         }
-        payload['answers'] = mcAnswers.map((a) => a.toJson()).toList();
+        payload['answers'] = answersPayload;
         break;
       case QuestionType.trueFalse:
         payload['correct_answer'] = tfCorrectAnswer.value;
         break;
       case QuestionType.weightedOptions:
-        if (weightedAnswers.any((a) => a.answerText.trim().isEmpty)) {
-          Get.snackbar('Terjadi Kesalahan', 'Semua opsi berbobot harus diisi.');
-          return;
+        List<Map<String, dynamic>> answersPayload = [];
+        for (int i = 0; i < weightedAnswers.length; i++) {
+          final text = weightedAnswerTextControllers[i].text.trim();
+          if (text.isEmpty) {
+            Get.snackbar(
+              'Kesalahan Validasi',
+              'Semua pilihan berbobot harus diisi.',
+            );
+            isLoading.value = false;
+            return;
+          }
+          answersPayload.add(
+            AnswerOption(
+              answerText: text,
+              points:
+                  double.tryParse(weightedAnswerPointsControllers[i].text) ??
+                  0.0,
+            ).toJson(),
+          );
         }
-        payload['answers'] = weightedAnswers.map((a) => a.toJson()).toList();
+        payload['answers'] = answersPayload;
         break;
       case QuestionType.matching:
-        if (matchingPairs.any(
-          (p) => p.prompt.trim().isEmpty || p.correctAnswer.trim().isEmpty,
-        )) {
-          Get.snackbar(
-            'Terjadi Kesalahan',
-            'Semua prompt dan jawaban untuk pasangan yang cocok harus diisi.',
+        List<Map<String, dynamic>> pairsPayload = [];
+        for (int i = 0; i < matchingPairs.length; i++) {
+          final prompt = matchingPromptControllers[i].text.trim();
+          final answer = matchingAnswerControllers[i].text.trim();
+          if (prompt.isEmpty || answer.isEmpty) {
+            Get.snackbar(
+              'Kesalahan Validasi',
+              'Semua soal dan jawaban untuk tipe menjodohkan harus diisi.',
+            );
+            isLoading.value = false;
+            return;
+          }
+          pairsPayload.add(
+            MatchingPair(prompt: prompt, correctAnswer: answer).toJson(),
           );
-          return;
         }
-        payload['matching_pairs'] = matchingPairs
-            .map((p) => p.toJson())
-            .toList();
-        payload['distractor_answers'] = distractorAnswers
-            .map((d) => d.answerText.trim())
+        payload['matching_pairs'] = pairsPayload;
+        payload['distractor_answers'] = distractorTextControllers
+            .map((c) => c.text.trim())
             .where((t) => t.isNotEmpty)
             .toList();
         break;
     }
 
-    isLoading.value = true;
     try {
       await TeacherQuizService.addQuestion(quizId, payload);
       questionCount.value++;
       Get.snackbar(
-        'Berhasil!',
+        'Sukses',
         'Pertanyaan #${questionCount.value} telah ditambahkan.',
         backgroundColor: Colors.green,
         colorText: Colors.white,
@@ -196,7 +338,7 @@ class TeacherAddQuestionsController extends GetxController
       resetForm();
     } catch (e) {
       Get.snackbar(
-        'Terjadi Kesalahan',
+        'Kesalahan Server',
         'Gagal menyimpan pertanyaan: ${e.toString()}',
         backgroundColor: Colors.red,
         colorText: Colors.white,
@@ -206,20 +348,22 @@ class TeacherAddQuestionsController extends GetxController
     }
   }
 
-  // --- FINISH & CANCEL LOGIC ---
-
   Future<void> finishQuiz() async {
     if (questionCount.value == 0) {
       Get.snackbar(
-        'Tidak ada Pertanyaan',
-        'Silakan tambahkan setidaknya satu pertanyaan.',
+        'Belum Ada Pertanyaan',
+        'Harap tambahkan setidaknya satu pertanyaan.',
       );
       return;
     }
-    Get.back(result: true);
+    if (Get.arguments['isNewQuiz'] == true) {
+      Get.toNamed(Routes.TEACHER_QUIZ_DETAILS, arguments: quizId);
+    } else {
+      Get.back(result: true);
+    }
   }
 
-  bool get hasUnsavedChanges => questionText.value.trim().isNotEmpty;
+  bool get hasUnsavedChanges => questionTextController.text.trim().isNotEmpty;
 
   Future<bool> confirmCancel() async {
     if (questionCount.value > 0 || hasUnsavedChanges) {
@@ -228,17 +372,17 @@ class TeacherAddQuestionsController extends GetxController
           title: const Text('Apakah Anda Yakin?'),
           content: Text(
             questionCount.value > 0
-                ? 'Anda telah menambahkan ${questionCount.value} pertanyaan. Jika Anda kembali, kuis akan disimpan dengan pertanyaan ini.'
-                : 'Anda memiliki perubahan yang belum disimpan. Jika Anda kembali, perubahan tersebut akan hilang.',
+                ? 'Anda telah menambahkan ${questionCount.value} pertanyaan. Jika Anda kembali, kuis akan disimpan dengan pertanyaan-pertanyaan ini.'
+                : 'Anda memiliki perubahan yang belum disimpan. Jika Anda kembali, perubahan akan hilang.',
           ),
           actions: [
             TextButton(
               onPressed: () => Get.back(result: false),
-              child: const Text('Lanjutkan Mengedit'),
+              child: const Text('LANJUTKAN MENGEDIT'),
             ),
             TextButton(
               onPressed: () => Get.back(result: true),
-              child: const Text('Konfirmasi & Kembali'),
+              child: const Text('KONFIRMASI & KEMBALI'),
             ),
           ],
         ),

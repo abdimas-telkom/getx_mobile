@@ -60,7 +60,6 @@ class TeacherQuizCreateController extends GetxController {
       final quizTitle = quiz['title'] as String;
       final quizCode = quiz['code'] as String;
 
-      // Navigate to add questions and await result
       final added =
           await Get.toNamed(
                 Routes.TEACHER_ADD_QUESTIONS,
@@ -69,44 +68,62 @@ class TeacherQuizCreateController extends GetxController {
                   'quizTitle': quizTitle,
                   'quizCode': quizCode,
                   'questionCount': 0,
+                  'isNewQuiz': true,
                 },
               )
               as bool?;
 
-      if (added != true) {
-        // No questions added: delete quiz
-        try {
-          await TeacherQuizService.deleteQuiz(quizId);
-          Get.snackbar(
-            'Dibatalkan',
-            'Ujian dibatalkan: tidak ada pertanyaan yang ditambahkan.',
-            snackPosition: SnackPosition.BOTTOM,
-          );
-        } catch (e) {
-          Get.snackbar(
-            'Terjadi Kesalahan',
-            'Gagal menghapus ujian kosong: ${e.toString()}',
-            snackPosition: SnackPosition.BOTTOM,
-          );
-        }
-        isLoading.value = false;
-        return;
-      }
+      navigation(quizId, added!);
 
       Get.snackbar(
         'Berhasil!',
         'Ujian berhasil dibuat!',
         snackPosition: SnackPosition.BOTTOM,
       );
-      Get.back(result: true);
     } catch (e) {
-      Get.snackbar(
-        'Terjadi Kesalahan',
-        e.toString(),
-        snackPosition: SnackPosition.BOTTOM,
-      );
+      if (e.toString().contains('404')) {
+        Get.snackbar(
+          'Terjadi Kesalahan',
+          'Server tidak ditemukan. Pastikan server berjalan.',
+          snackPosition: SnackPosition.BOTTOM,
+        );
+      } else if (e.toString().contains('500')) {
+        Get.snackbar(
+          'Terjadi Kesalahan',
+          'Kesalahan server. Silakan coba lagi nanti.',
+          snackPosition: SnackPosition.BOTTOM,
+        );
+      } else if (e.toString().contains('400')) {
+        Get.snackbar(
+          'Terjadi Kesalahan',
+          'Permintaan tidak valid. Periksa data yang dimasukkan.',
+          snackPosition: SnackPosition.BOTTOM,
+        );
+      }
     } finally {
       isLoading.value = false;
     }
+  }
+
+  Future<void> navigation(int quizId, bool added) async {
+    if (added != true) {
+      try {
+        await TeacherQuizService.deleteQuiz(quizId);
+        Get.snackbar(
+          'Dibatalkan',
+          'Ujian dibatalkan: tidak ada pertanyaan yang ditambahkan.',
+          snackPosition: SnackPosition.BOTTOM,
+        );
+      } catch (e) {
+        Get.snackbar(
+          'Terjadi Kesalahan',
+          'Gagal menghapus ujian kosong: ${e.toString()}',
+          snackPosition: SnackPosition.BOTTOM,
+        );
+      }
+      isLoading.value = false;
+      return;
+    }
+    return;
   }
 }

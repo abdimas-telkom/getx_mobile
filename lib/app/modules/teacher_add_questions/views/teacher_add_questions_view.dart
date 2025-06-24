@@ -100,7 +100,7 @@ class TeacherAddQuestionsView extends GetView<TeacherAddQuestionsController> {
         FormFieldWithLabel(
           label: 'Pertanyaan',
           child: TextFormField(
-            onChanged: (v) => controller.questionText.value = v,
+            onChanged: (v) => controller.questionTextController.text = v,
             decoration: InputDecoration(hintText: 'Masukkan teks pertanyaan'),
             maxLines: 3,
           ),
@@ -108,8 +108,8 @@ class TeacherAddQuestionsView extends GetView<TeacherAddQuestionsController> {
         ),
         const SizedBox(height: 16),
         TextFormField(
-          initialValue: controller.points.value.toString(),
-          onChanged: (v) => controller.points.value = int.tryParse(v) ?? 0,
+          initialValue: controller.pointsController.text,
+          onChanged: (v) => controller.pointsController.text = v,
           decoration: InputDecoration(
             labelText: 'Poin Maksimal untuk Soal ini',
           ),

@@ -128,7 +128,7 @@ class TeacherQuizDetailsController extends GetxController
     isDeleting.value = true;
     try {
       await TeacherQuizService.deleteQuiz(quizId);
-      Get.back(result: true);
+      Get.offAllNamed(Routes.TEACHER_DASHBOARD);
       Get.snackbar(
         'Sukses',
         'Ujian berhasil dihapus',

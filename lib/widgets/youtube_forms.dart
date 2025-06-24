@@ -10,10 +10,11 @@ Widget _buildMcOptionRow({
   required bool isSingleChoice,
 }) {
   final answer = controller.mcAnswers[index];
+  final textController = controller.mcAnswerTextControllers[index];
+
   return Padding(
     padding: const EdgeInsets.only(bottom: 12.0),
     child: Row(
-      key: ValueKey(answer),
       children: [
         isSingleChoice
             ? Radio<int>(
@@ -30,9 +31,8 @@ Widget _buildMcOptionRow({
               ),
         Expanded(
           child: TextFormField(
-            initialValue: answer.answerText,
-            onChanged: (val) => controller.mcAnswers[index].answerText = val,
-            decoration: InputDecoration(hintText: 'Teks Jawaban'),
+            controller: textController,
+            decoration: const InputDecoration(hintText: 'Teks Jawaban'),
           ),
         ),
         if (controller.mcAnswers.length > 2)
@@ -85,7 +85,10 @@ Widget buildWeightedOptionsForm({required IQuestionFormController controller}) {
   return Obx(
     () => Column(
       children: List.generate(controller.weightedAnswers.length, (index) {
-        final answer = controller.weightedAnswers[index];
+        final textController = controller.weightedAnswerTextControllers[index];
+        final pointsController =
+            controller.weightedAnswerPointsControllers[index];
+
         return Padding(
           padding: const EdgeInsets.only(bottom: 12.0),
           child: Row(
@@ -94,21 +97,17 @@ Widget buildWeightedOptionsForm({required IQuestionFormController controller}) {
               Expanded(
                 flex: 3,
                 child: TextFormField(
-                  initialValue: answer.answerText,
-                  onChanged: (val) =>
-                      controller.weightedAnswers[index].answerText = val,
-                  decoration: InputDecoration(hintText: 'Teks Jawaban'),
+                  controller: textController,
+                  decoration: const InputDecoration(hintText: 'Teks Jawaban'),
                 ),
               ),
               const SizedBox(width: 16),
               SizedBox(
                 width: 70,
                 child: TextFormField(
-                  initialValue: answer.points.toString(),
+                  controller: pointsController,
                   textAlign: TextAlign.center,
-                  onChanged: (val) => controller.weightedAnswers[index].points =
-                      (int.tryParse(val) ?? 0) as double?,
-                  decoration: InputDecoration(hintText: 'Poin'),
+                  decoration: const InputDecoration(hintText: 'Poin'),
                   keyboardType: TextInputType.number,
                 ),
               ),
@@ -142,7 +141,6 @@ Widget buildMatchingForm({required IQuestionFormController controller}) {
         ),
         const SizedBox(height: 8),
         ...List.generate(controller.matchingPairs.length, (index) {
-          final pair = controller.matchingPairs[index];
           return Padding(
             padding: const EdgeInsets.only(bottom: 12.0),
             child: Row(
@@ -150,9 +148,7 @@ Widget buildMatchingForm({required IQuestionFormController controller}) {
               children: [
                 Expanded(
                   child: TextFormField(
-                    initialValue: pair.prompt,
-                    onChanged: (val) =>
-                        controller.matchingPairs[index].prompt = val,
+                    controller: controller.matchingPromptControllers[index],
                     decoration: InputDecoration(
                       hintText: 'Pertanyaan ${index + 1}',
                     ),
@@ -161,10 +157,8 @@ Widget buildMatchingForm({required IQuestionFormController controller}) {
                 const SizedBox(width: 8),
                 Expanded(
                   child: TextFormField(
-                    initialValue: pair.correctAnswer,
-                    onChanged: (val) =>
-                        controller.matchingPairs[index].correctAnswer = val,
-                    decoration: InputDecoration(hintText: 'Jawaban'),
+                    controller: controller.matchingAnswerControllers[index],
+                    decoration: const InputDecoration(hintText: 'Jawaban'),
                   ),
                 ),
                 IconButton(
@@ -188,16 +182,13 @@ Widget buildMatchingForm({required IQuestionFormController controller}) {
         ),
         const SizedBox(height: 8),
         ...List.generate(controller.distractorAnswers.length, (index) {
-          final distractor = controller.distractorAnswers[index];
           return Padding(
             padding: const EdgeInsets.only(bottom: 12.0),
             child: Row(
               children: [
                 Expanded(
                   child: TextFormField(
-                    initialValue: distractor.answerText,
-                    onChanged: (val) =>
-                        controller.distractorAnswers[index].answerText = val,
+                    controller: controller.distractorTextControllers[index],
                     decoration: InputDecoration(
                       hintText: 'Jawaban Salah ${index + 1}',
                     ),

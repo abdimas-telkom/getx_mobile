@@ -43,7 +43,6 @@ class TeacherQuizCreateView extends GetView<TeacherQuizCreateController> {
                   ),
                   maxLines: 4,
                 ),
-                isRequired: true,
               ),
               const SizedBox(height: 24),
               SwitchRow(
