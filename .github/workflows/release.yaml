@@ -10,6 +10,7 @@ jobs:
   build_and_release:
     name: Build and Release APK
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -34,8 +35,7 @@ jobs:
       - name: Extract version from pubspec.yaml
         id: extract_version
         run: |
-          # Extracts the version number (e.g., 1.0.0+1) from pubspec.yaml
-          version=$(grep '^version: ' pubspec.yaml | cut -d ' ' -f 2 | tr -d '\r')
+          version=$(grep -m1 '^version:' pubspec.yaml | sed 's/version:[[:space:]]*//' | tr -d '\r')
           echo "VERSION=$version" >> $GITHUB_ENV
 
       - name: Check if Tag Exists
@@ -52,7 +52,6 @@ jobs:
         if: env.TAG_EXISTS == 'true'
         id: modify_tag
         run: |
-          # If the tag exists, appends the build number to create a unique version
           new_version="${{ env.VERSION }}-build-${{ github.run_number }}"
           echo "VERSION=$new_version" >> $GITHUB_ENV
           echo "Release tag was modified to ${new_version} because v${{ env.VERSION }} already exists."
@@ -61,7 +60,6 @@ jobs:
         run: mv build/app/outputs/flutter-apk/app-release.apk build/app/outputs/flutter-apk/Ujian_v${{ env.VERSION }}.apk
 
       - name: Create Release and Upload APK
-        if: env.TAG_EXISTS == 'false'
         uses: ncipollo/release-action@v1
         with:
           artifacts: "build/app/outputs/flutter-apk/Ujian_v${{ env.VERSION }}.apk"
