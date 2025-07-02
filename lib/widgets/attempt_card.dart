@@ -25,7 +25,7 @@ Widget AttemptCard(QuizAttempt attempt) {
   return GestureDetector(
     onTap: () {
       try {
-        Get.offNamed(
+        Get.toNamed(
           Routes.STUDENT_RESULT,
           arguments: {'attemptId': attempt.id, 'isGuru': true},
         );

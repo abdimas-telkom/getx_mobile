@@ -22,11 +22,10 @@ class StudentResultController extends GetxController {
     isLoading.value = true;
     print(attemptId);
     try {
-      results.value = await StudentQuizService.getResults(attemptId);
-    } catch (e) {
-      if (isGuru && e.toString().contains('403')) {
+      if (isGuru) {
         try {
           results.value = await TeacherQuizService.getResults(attemptId);
+          print(results.value?.totalPoints);
         } catch (teacherError) {
           Get.snackbar(
             'Terjadi Kesalahan',
@@ -35,14 +34,16 @@ class StudentResultController extends GetxController {
           );
         }
       } else {
-        print("Error loading results: $e");
-        print(results.value);
-        Get.snackbar(
-          'Terjadi Kesalahan',
-          e.toString(),
-          snackPosition: SnackPosition.BOTTOM,
-        );
+        results.value = await StudentQuizService.getResults(attemptId);
       }
+    } catch (e) {
+      print("Error loading results: $e");
+      print(results.value);
+      Get.snackbar(
+        'Terjadi Kesalahan',
+        e.toString(),
+        snackPosition: SnackPosition.BOTTOM,
+      );
     } finally {
       isLoading.value = false;
     }
