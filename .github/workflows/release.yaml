@@ -41,8 +41,8 @@ jobs:
       - name: Check if Tag Exists
         id: check_tag
         run: |
-          # Checks if a git tag with the extracted version already exists
-          if git rev-parse "v${{ env.VERSION }}" >/dev/null 2>&1; then
+          git fetch --tags
+          if git tag | grep -q "v${{ env.VERSION }}"; then
             echo "TAG_EXISTS=true" >> $GITHUB_ENV
           else
             echo "TAG_EXISTS=false" >> $GITHUB_ENV
@@ -61,6 +61,7 @@ jobs:
         run: mv build/app/outputs/flutter-apk/app-release.apk build/app/outputs/flutter-apk/Ujian_v${{ env.VERSION }}.apk
 
       - name: Create Release and Upload APK
+        if: env.TAG_EXISTS == 'false'
         uses: ncipollo/release-action@v1
         with:
           artifacts: "build/app/outputs/flutter-apk/Ujian_v${{ env.VERSION }}.apk"
