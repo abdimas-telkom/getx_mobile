@@ -5,9 +5,6 @@ class ApiClient {
     BaseOptions(
       baseUrl: 'http://40.65.153.112:8080/api',
       headers: {'Content-Type': 'application/json'},
-      validateStatus: (status) {
-        return status != null && status < 500;
-      },
     ),
   );
 
